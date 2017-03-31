@@ -1,0 +1,22 @@
+<html>
+  <head>
+    <title>{{title}}</title>
+    {{> meta-tags}}
+    {{> head-imports}}
+    {{> webapp-manifest}}
+
+    {{{block "pageStyles"}}}
+  </head>
+  <body>
+    {{{body}}}
+ 
+    {{> body-imports}}
+ 
+    {{{block 'OneSignalScripts'}}}
+    {{{block 'facebookScripts'}}}
+    {{{block 'googleMapsScripts'}}}
+    {{{block 'googleTagManagerScripts'}}}
+    {{{block 'googleAnalyticsScripts'}}}
+ 
+  </body>
+</html>

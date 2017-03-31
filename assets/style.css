@@ -1,0 +1,271 @@
+/*Custom*/
+ @font-face {
+    font-family: NovaSoft;
+    src: url('https://cdn.rawgit.com/GordyD/rethinkdb-pres/bbec0b1d/fonts/proxima-nova-soft-normal-webfont.ttf?raw=true');
+}
+
+.hidden{
+ display:none !important;
+}
+
+.toc.item {
+ min-height: 20px
+}
+
+.web-title-container{
+ background-color: white;
+}
+.web-title{
+     margin-left: calc(50vw - 3em);
+    font-family: NovaSoft;
+    font-size: 1.5em;
+    color: #777;
+} 
+
+.pusher {
+    background-color: #f6f6f6 !important ;
+ padding-bottom: 10em !important;
+}
+
+.footer{
+ padding:1em;
+ text-align: center;
+}
+.footer > a{
+ color: #777;
+}
+.footer-wp{
+ padding:1rem 1rem 0 1rem;
+ margin:1rem 1rem -0.2rem 1rem;
+ text-align: center;
+ color: #aaa;
+}
+.footer-wp > a{
+ color: #aaa;
+}
+
+
+
+.ui.header.title {
+ font-weight: 300;
+ font-size: 1.5em;
+ margin: 0.5em;
+}
+.image.promo > .text {
+ background: linear-gradient( rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6));
+ color: white;
+ padding: 1em 1em 1em 1em;
+ position: absolute;
+ margin-top: -8.5em;
+}
+.image.promo > .text > .subtitle {
+ margin-top: -2.1em;
+ padding-left: 3.2em;
+}
+.image.promo > .text > .title {
+ font-size: 1.5em;
+}
+
+.image.promo .icon {
+ margin-top: .5em;
+}
+
+.bottom-items{
+ position: absolute !important;
+    bottom: 0;
+    left: 0;
+ width:100%;
+}
+
+.segment.winners{
+    background-color: #f6f6f6 !important;
+    margin-bottom: 0;
+ margin-top: 0;
+}
+
+.ui.header.promo-title{
+     margin: 0;
+    padding: 1rem;
+    margin-top: 1rem;
+ background-color: white !important; 
+}
+
+/*Share buttons*/
+
+.fb-messenger {
+ /*Facebook Messenger icon by Icons8 */
+ 
+ background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjAiIHg9IjBweCIgeT0iMHB4IiB2aWV3Qm94PSIwIDAgMjQgMjQiIGZpbGw9IiNmZmZmZmYiID4gICAgPHBhdGggZD0iTSAxMiAyIEMgNi41MTg1NzI5IDIgMiA2LjIzMzc4MDEgMiAxMS41IEMgMiAxNC4xMjU1MjIgMy4xOTgyNDgyIDE2LjQ0NTUzNSA1IDE4LjE1NjI1IEwgNSAyMSBMIDUgMjIuNjI1IEwgNi40Mzc1IDIxLjkwNjI1IEwgOS4xODc1IDIwLjUzMTI1IEMgMTAuMDg3MjkyIDIwLjc4Njg4NyAxMS4wMDY4OTIgMjEgMTIgMjEgQyAxNy40ODE0MjcgMjEgMjIgMTYuNzY2MjIgMjIgMTEuNSBDIDIyIDYuMjMzNzgwMSAxNy40ODE0MjcgMiAxMiAyIHogTSAxMiA0IEMgMTYuNDYwNTczIDQgMjAgNy4zNzgyMTk5IDIwIDExLjUgQyAyMCAxNS42MjE3OCAxNi40NjA1NzMgMTkgMTIgMTkgQyAxMS4wNTgyNjggMTkgMTAuMTYwMDgyIDE4Ljg0NTkyNyA5LjMxMjUgMTguNTYyNSBMIDguOTA2MjUgMTguNDM3NSBMIDguNTMxMjUgMTguNjI1IEwgNyAxOS4zNzUgTCA3IDE3LjgxMjUgTCA3IDE3LjM3NSBMIDYuNjU2MjUgMTcuMDYyNSBDIDUuMDIzNjgzOCAxNS42Nzk2NjIgNCAxMy43MDU1OTQgNCAxMS41IEMgNCA3LjM3ODIxOTkgNy41Mzk0MjcxIDQgMTIgNCB6IE0gMTEuMDYyNSA5LjAzMTI1IEwgNi4xNTYyNSAxNC4yMTg3NSBMIDEwLjU2MjUgMTEuNzUgTCAxMi45Mzc1IDE0LjI4MTI1IEwgMTcuNzgxMjUgOS4wMzEyNSBMIDEzLjQ2ODc1IDExLjQzNzUgTCAxMS4wNjI1IDkuMDMxMjUgeiI+PC9wYXRoPjwvc3ZnPg==') 50% 50% no-repeat;
+ background-size: 100%;
+ width: 18px !important;
+ height: 18px !important;
+}
+.icon.fb-messenger {
+ display: inline-block;
+ margin: -1em 0.5em -0.1em -0.15em !important;
+}
+.messenger.button {
+ background-color: #448aff;
+ color: white;
+ margin-top:0.5em;
+}
+.messenger.button:hover,
+.messenger.button:focus {
+ background-color: #347aef;
+ color: white;
+}
+.messenger.button:active {
+ background-color: #246adf;
+ color: white;
+}
+/*Winners custom style*/
+
+.avatar.circular.image {
+ width: 3.5em;
+ margin: 0.2em 0.3em 0.2em 0.2em;
+}
+.label.middle {
+ margin: 10px 0 !important;
+}
+/*Google Maps + StreetView container*/
+
+#map,
+#pano {
+ /*float: left;*/
+ 
+ height: 202px;
+ width: 100%;
+ margin-bottom: 10px
+}
+.container-map {
+ /*height: 100%;*/
+ width: 100%;
+}
+#collapseThree {
+ height: 400px;
+}
+.address {
+ margin-top: -35px;
+}
+.right-icon {
+ float: right;
+}
+/*iOS Sidebars fix*/
+
+html.ios {
+ overflow-x: hidden;
+ -webkit-overflow-scrolling: touch;
+}
+html.ios,
+html.ios body {
+ height: initial !important;
+}
+
+/*Fixed bottom panel*/
+.ui.sticky.fixed.bottom {
+     width: 100% !important;
+    margin-left: 0px !important;
+    margin-right: 0px !important;
+    left: 0px;
+    right: auto;
+    bottom: 0px;
+    box-shadow: 0 1px 5px 0px black;
+    border-radius: 5px;
+}
+
+
+.remaining-time > p {
+ margin-bottom: 0 !important;
+}
+.my-points > p {
+ margin-bottom: 0 !important;
+}
+
+
+.ui.sticky.fixed.bottom > .ui.segment{
+     padding: 0.5em;
+}
+.ui.friends-info{
+ padding:0;
+}
+
+.seven.wide.column{
+ padding-left: 0 !important;
+}
+.nine.wide.column .divider{
+     margin-left: 1em !important;
+} 
+.nine.wide.column{
+ padding-left: 0 !important;
+ padding-right: 0 !important;
+}
+
+.angle.up.icon.link{
+ margin-left:0.5em !important;
+ margin-right:-2em !important;
+}
+
+.seven.wide.column >button{
+ margin-top:0.2em !important;
+}
+
+.ui.divider.top-divider{
+ margin-top:-0.2em;
+  margin-bottom:-0.3em;
+    margin-left: -1em ;
+    margin-right: -1em; 
+  border-top: 1px solid rgba(34, 36, 38, 0.06) !important;
+   
+}
+.ui.divider.middle-divider{
+     margin-left: -1em;
+    margin-right: -1em; 
+    border-top: 3px solid rgba(34, 36, 38, 0.10) !important;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.07) !important;
+}
+.ui.divider.info-divider{
+ margin: 0.2em;
+    border-top: 1px dashed rgba(34, 36, 38, 0.10) !important;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.07) !important;
+
+}
+.ui.divider.bottom-divider{
+  margin-bottom:0em  !important;
+    margin-left: -3em !important;
+    margin-right: -3em !important; 
+  border-top: 1px solid rgba(34, 36, 38, 0.04) !important;
+
+}
+.ui.sticky .wide.column{
+ margin-top:-1.2em !important;
+ padding-top:0em !important;
+ margin-bottom:-1.3em  !important;
+ 
+}
+
+.ui.sticky .ui.middle.aligned.grid{
+ margin-top: 0rem;
+}
+
+
+
+@media only screen and (max-width: 700px) {}
+
+/*Custom scrollbar*/
+html::-webkit-scrollbar {
+      width: 8px;
+}
+html::-webkit-scrollbar-track {
+      -webkit-box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.2);
+      -webkit-border-radius: 4px;
+      border-radius: 4px;
+}
+html::-webkit-scrollbar-thumb {
+      -webkit-border-radius: 4px;
+      border-radius: 4px;
+      background: rgba(190, 190, 190, 0.7);
+      -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.3);
+}
+html::-webkit-scrollbar-thumb:window-inactive {
+      background: rgba(190, 190, 190, 0.1);
+}

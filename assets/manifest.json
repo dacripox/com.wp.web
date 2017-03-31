@@ -1,0 +1,16 @@
+{
+  "name": "WhatsPromo",
+  "short_name": "WP",
+  "description": "Promociones exclusivas para ti.",
+  "lang": "es-ES",
+  "start_url": "/",
+  "display": "fullscreen",
+  "theme_color": "#00B5AD",
+  "icons": [
+    {
+      "src": "http://cdn.mysitemyway.com/etc-mysitemyway/icons/legacy-previews/icons/rounded-glossy-black-icons-alphanumeric/074137-rounded-glossy-black-icon-alphanumeric-letter-w.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
