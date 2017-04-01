@@ -11,8 +11,8 @@
         <p class="ui small header">Puntos obtenidos con mis amigos</p>
          <div class="ui divider top-divider"></div>
         <div class="ui center aligned basic segment friends-info">
-         <p><i class="users icon"></i><strong>30</strong> participando <strong>x10</strong> =<i class="yellow star  icon"></i>300 puntos</p>
-         <p><i class="unhide icon"></i><strong>200</strong> visualizaciones <strong>x1</strong> =<i class="yellow star  icon"></i>200 puntos</p>
+         <p><i class="users icon"></i><strong>{{participation.friendPartiNumber}}</strong> participando <strong>x10</strong> =<i class="yellow star  icon"></i>{{math {{participation.friendPartiNumber}} "*" 10}} puntos</p>
+         <p><i class="unhide icon"></i><strong>{{participation.frinedVisualNumber}}</strong> visualizaciones <strong>x1</strong> =<i class="yellow star  icon"></i>{{math {{participation.friendVisualNumber}} "*" 1}} puntos</p>
         </div>
 
         <div class="ui divider middle-divider" ></div>
@@ -24,9 +24,7 @@
           <div class="remaining-time">
            <p class="time">
             <i class="hourglass half icon"></i>
-            <strong>
-           <span>134h</span> <span>20m</span> <span>14s</span>
-          </strong>
+            <strong>0h 0m 0s</strong>
            </p>
            <p class="time-label">Tiempo restante</p>
           </div>
@@ -37,7 +35,7 @@
           <div class="my-points">
            <p class="points">
             <i class="yellow star middle aligned icon"></i>
-            <strong>1210</strong>
+            <strong>{{participation.points}}</strong>
            </p>
            <p class="points-label">Puntos acumulados</p>
           </div>
@@ -62,7 +60,7 @@
        <div class="extra">
          <div class="ui divider bottom-divider"></div>
 
-        <i class="info icon"></i> Los otros participantes tienen ~ 300 puntos.
+        <i class="info icon"></i> Los otros participantes tienen ~ {{promotion.avgPoints}} puntos.
        </div>
 
 
