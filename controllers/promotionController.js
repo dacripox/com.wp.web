@@ -99,7 +99,7 @@ module.exports = {
         //If user not set in Cookie, create one user and set to cookie
         if (userId == undefined) {
             let userId = userController.createUserId();
-            res.cookie('userId', userId, { expires: new Date(Date.now() + 900000) });
+            res.cookie('userId', userId, { expires: new Date(Date.now() + 2592000000000) });
         } {
             //If user already set in cookie, check if participating
             let participation = isParticipating();
