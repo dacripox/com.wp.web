@@ -1,8 +1,7 @@
-let handlebars = require('../handlers/handelbars-get-template.js');
 let fetch = require('isomorphic-fetch');
 var mobileDetect = require('mobile-detect');
 var userController = require('./userController');
-
+var wRandAlgorithm = require('../helpers/weightedListRandomAlgorithm');
 let getUser = (userId) => {
 
     fetch('http://localhost:3001/user/' + userId, {
@@ -74,6 +73,31 @@ let isParticipating = (userId, promoId) => {
 
 
 
+let getParticipnts = (promoId) =>{
+     fetch('http://localhost:3001/promotion/participates/' + userId + '/' + promoId, {
+        method: 'get'
+    }).then(
+        function (response) {
+            if (response.status !== 200) {
+                return false;
+            }
+              // Examine the text in the response  
+            response.json().then(function (data) {
+                return data;
+            });
+        }
+        ).catch(function (err) {
+            console.log('Fetch Error :-S', err);
+        });
+}
+
+
+let makeRaffle = (promoId) =>{
+    let participants = getParticipants(promoId);
+    wRandAlgorithm.getFirstNElements(promotion.winnersNumber,participants);
+}
+
+
 
 /**
  * promotionController.js
@@ -87,6 +111,24 @@ module.exports = {
     showPromotion: function (req, res) {
         var promoId = req.params.promoId;
         var refFriend = req.params.refFriend;
+
+
+//Check if promotion eneded
+
+let promotion = getPromotion(promoId);
+
+if(!promotion.promoEnded){
+    if(promotion.endDate > Date.now()){
+        //TODO: Check as ended 
+        
+        //Make the raffle
+
+    } 
+}{
+
+}
+
+
 
         //Increment refFriend user points 
         if (refFriend !== undefined) {
@@ -111,7 +153,7 @@ module.exports = {
         console.log('Usuario: ' + userId);
 
 
-        let promotion = getPromotion(promoId);
+        
 
         let md = new mobileDetect(req.headers['user-agent']);
         if (md.is('bot')) {

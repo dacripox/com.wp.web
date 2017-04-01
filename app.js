@@ -4,6 +4,9 @@ var app = express();
 var md5 = require('md5');
 var mainRoutes = require('./routes/index');
 var apiRoutes = require('./routes/api');
+var favicon = require('serve-favicon')
+
+app.use(favicon(path.join(__dirname, 'assets/favicons', 'favicon.ico')))
 
 var bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: false }));
