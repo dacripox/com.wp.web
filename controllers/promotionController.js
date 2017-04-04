@@ -26,48 +26,35 @@ let getUser = (userId) => {
         });
 };
 
-let getPromotion = (promoId) => {
-
-    fetch('http://localhost:3001/promotion/' + promoId, {
-        method: 'get'
-    }).then(
-        function (response) {
-            if (response.status !== 200) {
-                console.log('Looks like there was a problem. Status Code: ' +
-                    response.status);
-                console.log('Looks like there was a problem. Status Code: ' +
-                    response);
-                return;
-            }
-
-            // Examine the text in the response  
-            response.json().then(function (data) {
-                return data;
-            });
+let getPromotion = async (promoId) => {
+    try {
+        let response = await fetch('http://localhost:3000/promotion/id/' + promoId, { method: 'get'});
+        let data = await response.json();
+        if (response.status !== 200) {
+            return;
         }
-        ).catch(function (err) {
-            console.log('Fetch Error :-S', err);
-        });
+        return data;
+    } catch (error) {
+        console.error('Fetch error. URL: '+url);
+        console.error('Fetch error. STATUS: '+response.status);
+        console.error(error);
+    }
 };
 
 
-
-let isParticipating = (userId, promoId) => {
-    fetch('http://localhost:3001/user/participates/' + userId + '/' + promoId, {
-        method: 'get'
-    }).then(
-        function (response) {
-            if (response.status !== 200) {
-                return false;
-            }
-            // Examine the text in the response  
-            response.json().then(function (data) {
-                return data;
-            });
+let isParticipating = async (userId, promoId) => {
+    try{
+        let response = await fetch('http://localhost:3001/user/participates/' + userId + '/' + promoId, { method: 'get' });
+        let data = await response.json();
+        if (response.status !== 200) {
+            return;
         }
-        ).catch(function (err) {
-            console.log('Fetch Error :-S', err);
-        });
+        return data;
+    } catch (error) {
+        console.error('Fetch error. URL: '+url);
+        console.error('Fetch error. STATUS: '+response.status);
+        console.error(error);
+    }
 
 };
 
@@ -94,13 +81,14 @@ let getParticipants = (promoId) => {
 
 let makeRaffle = (promoId) => {
 
-    fetch('http://localhost:3001/promotion//endWithRaffle/' + promoId, {
+    fetch('http://localhost:3001/promotion/endWithRaffle/' + promoId, {
         method: 'get'
     }).then(
         function (response) {
             if (response.status !== 200) {
                 return false;
             }
+            console.log(response);
             // Examine the text in the response  
             response.json().then(function (data) {
                 return data;
@@ -122,18 +110,19 @@ module.exports = {
     /**
      * promotionController.showPromotion()
      */
-    showPromotion: function (req, res) {
-        var promoId = req.params.promoId;
-        var refFriend = req.params.refFriend;
+    showPromotion: async function (req, res) {
+        const promoId = req.params.promoId;
+        const refFriend = req.params.refFriend;
 
 
         //Check if promotion eneded
+       
+       let promotion =  await getPromotion(promoId);
+        
 
-        let promotion = getPromotion(promoId);
-
-        if (!promotion) {
-            console.log(`promoción ${promoId} no encontrada`);
-            res.render('promotion-not-found', { title: 'No title', promoId: promoId});
+        if (promotion == undefined) {
+            console.log(`promoción ${promoId} no encontrada / o error`);
+            res.render('promotion-not-found', { title: 'No title', promoId: promoId });
 
         } else {
             if (!promotion.promoEnded) {

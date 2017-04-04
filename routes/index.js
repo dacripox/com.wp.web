@@ -10,12 +10,12 @@ var router = express.Router();
 /*
  * GET
  */
-router.get('/:promoId', promotionController.showPromotion);
+router.get('/p/:promoId', promotionController.showPromotion);
 
 
 /*
  * GET
  */
-router.get('/:promoId/:refFriend', promotionController.showPromotion);
+router.get('/p/:promoId/:refFriend', promotionController.showPromotion);
 
 module.exports = router;
