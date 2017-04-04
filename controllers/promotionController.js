@@ -28,22 +28,22 @@ let getUser = (userId) => {
 
 let getPromotion = async (promoId) => {
     try {
-        let response = await fetch('http://localhost:3000/promotion/id/' + promoId, { method: 'get'});
+        let response = await fetch('http://localhost:3000/promotion/id/' + promoId, { method: 'get' });
         let data = await response.json();
         if (response.status !== 200) {
             return;
         }
         return data;
     } catch (error) {
-        console.error('Fetch error. URL: '+url);
-        console.error('Fetch error. STATUS: '+response.status);
+        console.error('Fetch error. URL: ' + url);
+        console.error('Fetch error. STATUS: ' + response.status);
         console.error(error);
     }
 };
 
 
 let isParticipating = async (userId, promoId) => {
-    try{
+    try {
         let response = await fetch('http://localhost:3001/user/participates/' + userId + '/' + promoId, { method: 'get' });
         let data = await response.json();
         if (response.status !== 200) {
@@ -51,8 +51,8 @@ let isParticipating = async (userId, promoId) => {
         }
         return data;
     } catch (error) {
-        console.error('Fetch error. URL: '+url);
-        console.error('Fetch error. STATUS: '+response.status);
+        console.error('Fetch error. URL: ' + url);
+        console.error('Fetch error. STATUS: ' + response.status);
         console.error(error);
     }
 
@@ -116,9 +116,9 @@ module.exports = {
 
 
         //Check if promotion eneded
-       
-       let promotion =  await getPromotion(promoId);
-        
+
+        let promotion = await getPromotion(promoId);
+
 
         if (promotion == undefined) {
             console.log(`promoción ${promoId} no encontrada / o error`);
