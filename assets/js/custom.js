@@ -437,6 +437,9 @@ function actualizarNotificacion(tipo) {
  /*Share promo modal*/
  $('.modal.share').modal('attach events', '.button.share', 'show');
 
+  /*FAQ's modal*/
+ $('.modal.faqs').modal('attach events', '.item.faqs', 'show');
+
  $('XX.modal.login')
   .modal({
    closable: false,
