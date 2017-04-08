@@ -35,7 +35,7 @@ let getPromotion = async (promoId) => {
         }
         return data;
     } catch (error) {
-        console.error('Fetch error. URL: ' + url);
+        
         console.error('Fetch error. STATUS: ' + response.status);
         console.error(error);
     }
@@ -51,7 +51,6 @@ let isParticipating = async (userId, promoId) => {
         }
         return data;
     } catch (error) {
-        console.error('Fetch error. URL: ' + url);
         console.error('Fetch error. STATUS: ' + response.status);
         console.error(error);
     }
@@ -122,7 +121,7 @@ module.exports = {
 
         if (promotion == undefined) {
             console.log(`promoción ${promoId} no encontrada / o error`);
-            res.render('promotion-not-found', { title: 'No title', promoId: promoId });
+            res.render('promotion-not-found', { title: promotion.promoTitle, promoId: promoId });
 
         } else {
             if (!promotion.promoEnded) {
@@ -173,7 +172,7 @@ module.exports = {
             }
 
             //Mobile promotion
-            res.render('mobile-version', { title: 'No title', promoId: promoId, refFriend: refFriend, userId: userId, winners: [{ name: 'Maria', points: 777, profileImg: 'http://semantic-ui.com/images/avatar2/small/molly.png' }] });
+            res.render('mobile-version', { promotion: promotion, title: 'No title', promoId: promoId, refFriend: refFriend, userId: userId, winners: [{ name: 'Maria', points: 777, profileImg: 'http://semantic-ui.com/images/avatar2/small/molly.png' }] });
 
         } //end if-else (promotion not found / found)
 
