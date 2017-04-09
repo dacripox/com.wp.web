@@ -7,7 +7,7 @@ var router = express.Router();
 /*
  * GET
  */
-router.get('/participate/:userId/:promoId', promotionController.doParticipate);
+router.get('/participate', promotionController.doParticipate);
 
 
 /*

@@ -22,7 +22,7 @@ module.exports = {
         return token;
     },
 
-      /**
+    /**
      * userController.updateProfile()
      */
     updateProfile: (req,res) => {
