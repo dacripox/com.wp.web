@@ -3,28 +3,21 @@ var mobileDetect = require('mobile-detect');
 var userController = require('./userController');
 var request = require('request-promise');
 
-let getUser = (userId) => {
+let getUser = async (userId) => {
 
-    fetch('http://localhost:3001/user/' + userId, {
-        method: 'get'
-    }).then(
-        function (response) {
-            if (response.status !== 200) {
-                console.log('Looks like there was a problem. Status Code: ' +
-                    response.status);
-                console.log('Looks like there was a problem. Status Code: ' +
-                    response);
-                return;
-            }
-
-            // Examine the text in the response  
-            response.json().then(function (data) {
-                return data;
-            });
+    try {
+        let response = await fetch('http://localhost:3000/user/id/' + userId, { method: 'get' });
+        let data = await response.json();
+        if (response.status !== 200) {
+            return;
         }
-        ).catch(function (err) {
-            console.log('Fetch Error :-S', err);
-        });
+        return data;
+    } catch (error) {
+
+        console.error('Fetch error. STATUS: ' + response.status);
+        console.error(error);
+    }
+
 };
 
 let getPromotion = async (promoId) => {
@@ -45,12 +38,16 @@ let getPromotion = async (promoId) => {
 
 let isParticipating = async (userId, promoId) => {
     try {
-        let response = await fetch('http://localhost:3000/participates/' + userId + '/' + promoId, { method: 'get' });
+        let response = await fetch('http://localhost:3000/user/participates/' + userId + '/' + promoId, { method: 'get' });
         let data = await response.json();
         if (response.status !== 200) {
             return;
         }
-        return data;
+        if (data.participating) {
+            return true;
+        } else {
+            return false;
+        }
     } catch (error) {
         console.error('Fetch error. STATUS: ' + response.status);
         console.error(error);
@@ -60,22 +57,19 @@ let isParticipating = async (userId, promoId) => {
 
 
 
-let getParticipants = (promoId) => {
-    fetch('http://localhost:3001/promotion/participates/' + userId + '/' + promoId, {
-        method: 'get'
-    }).then(
-        function (response) {
-            if (response.status !== 200) {
-                return false;
-            }
-            // Examine the text in the response  
-            response.json().then(function (data) {
-                return data;
-            });
+let getParticipation = async (userId, promoId) => {
+
+    try {
+        let response = await fetch('http://localhost:3000/participation/user/' + userId + '/promotion/' + promoId, { method: 'get' });
+        let data = await response.json();
+        if (response.status !== 200) {
+            return;
         }
-        ).catch(function (err) {
-            console.log('Fetch Error :-S', err);
-        });
+        return data;
+    } catch (error) {
+        console.error('Fetch error. STATUS: ' + response.status);
+        console.error(error);
+    }
 }
 
 
@@ -118,27 +112,35 @@ let newParticipation = async (participation) => {
     return response;
 };
 
-let incrementPoints = async (userId, points) => {
-    console.log('incrementing points');
+let incrementPoints = async (userId, promoId, points) => {
+    console.log('incrementing points for userId: ' + userId + ' and promoId:' + promoId);
     let formData = {};
-    let response = await request.post({ url: 'http://localhost:3000/participation/increment-points/' + userId + '/' + points, form: formData });
+    let response = await request.post({ url: 'http://localhost:3000/participation/increment-points/user/' + userId + '/promotion/' + promoId + '/points/' + points, form: formData });
     return response;
 };
 
 
-let incrementVisualization = async (userId) => {
-    console.log('incrementing visualization');
+let incrementVisualization = async (userId, promoId) => {
+    console.log('incrementing visualization for userId: ' + userId + ' and promoId:' + promoId);
     let formData = {};
-    let response = await request.post({ url: 'http://localhost:3000/participation/increment-visualization/' + userId, form: formData });
+    let response = await request.post({ url: 'http://localhost:3000/participation/increment-visualization/user/' + userId + '/promotion/' + promoId, form: formData });
     return response;
 };
 
-let incrementParticipation = async (userId) => {
-    console.log('incrementing participation');
+let incrementParticipation = async (userId, promoId) => {
+    console.log('incrementing participation for userId: ' + userId + ' and promoId:' + promoId);
     let formData = {};
-    let response = await request.post({ url: 'http://localhost:3000/participation/increment-participation/' + userId, form: formData });
+    let response = await request.post({ url: 'http://localhost:3000/participation/increment-participation/user/' + userId + '/promotion/' + promoId, form: formData });
     return response;
 };
+let existsUser = async (user) => {
+    console.log('check if user already exists, before participating');
+    let formData = {};
+    let response = await request.get({ url: 'http://localhost:3000/user/exist/email/' + user.email + '/phone/' + user.phone, form: formData });
+    return response;
+};
+
+
 
 
 /**
@@ -171,15 +173,15 @@ module.exports = {
             requestType = 'desktop';
         }
 
-        let showPromotion = (promotion, user, requestType) => {
+        let showPromotion = (promotion, user, participation, requestType) => {
             if (requestType == 'mobile') {
                 console.log('show promotion on mobile');
                 //Mobile promotion
-                res.render('mobile-version', { title: promotion.promoTitle, promotion: promotion, user: user, winners: [{ name: 'Maria', points: 777, profileImg: 'http://semantic-ui.com/images/avatar2/small/molly.png' }] });
+                res.render('mobile-version', { title: promotion.promoTitle, promotion: promotion, participation: participation, user: user, winners: [{ name: 'Maria', points: 777, profileImg: 'http://semantic-ui.com/images/avatar2/small/molly.png' }] });
             } else {
                 console.log('show promotion on desktop');
                 //Desktop promotion
-                res.render('mobile-version', { title: promotion.promoTitle, promotion: promotion, user: user, winners: [{ name: 'Maria', points: 777, profileImg: 'http://semantic-ui.com/images/avatar2/small/molly.png' }] });
+                res.render('mobile-version', { title: promotion.promoTitle, promotion: promotion, participation: participation, user: user, winners: [{ name: 'Maria', points: 777, profileImg: 'http://semantic-ui.com/images/avatar2/small/molly.png' }] });
             }
         }
 
@@ -212,26 +214,28 @@ module.exports = {
                     } else {
                         console.log('user already created');
                         //If user already set in cookie, check if participating
-                        let participation = isParticipating(userId, promoId);
-                        if (participation == true) {
+                        let alreadyParticipating = await isParticipating(userId, promoId);
+
+                        if (alreadyParticipating == true) {
                             console.log('user already participating');
-                            let user = getUser();
+                            let user = await getUser();
+                            let participation = await getParticipation(userId, promoId);
                             //Show promotion (with user details)
-                            console.log('user is: '+ user);
-                            showPromotion(promotion, user, requestType);
+                            console.log('user is: ' + user);
+                            showPromotion(promotion, user, participation, requestType);
                         }
                         else {
                             console.log('user not participating ');
                             //Show promotion (new user)
-                            showPromotion(promotion, {}, requestType);
+                            showPromotion(promotion, {}, {}, requestType);
                         }
                     }
                     //If has refFriend, increment points
                     if (refFriend) {
-                        if (!req.cookies.p) { //Special cookie for limit once incrementations
+                        if (!req.cookies.p && userId!=refFriend) { //Special cookie for limit once incrementations
                             console.log('Setting special points cookie');
-                            incrementPoints(refFriend, 1);
-                            incrementVisualization(refFriend);
+                            incrementPoints(refFriend, promoId, 1);
+                            incrementVisualization(refFriend, promoId);
                             res.cookie('p', '1', { expires: new Date(Date.now() + 2592000000000) });
                         }
                     }
@@ -244,19 +248,20 @@ module.exports = {
                 if (userId == undefined) {
                     console.log('show promotion ended, user not defined, promotion already ended');
                     //Show promotion (ended)
-                    showPromotion(promotion, {}, requestType);
+                    showPromotion(promotion, {}, {}, requestType);
 
                 } else {
                     console.log('show promotion ended, user exists, promotion already ended');
 
                     //If user already set in cookie, check if participating
-                    let participation = isParticipating(userId, promoId);
-                    if (participation !== false) {
+                    let alreadyParticipating = await isParticipating(userId, promoId);
+                    if (alreadyParticipating !== false) {
                         console.log('user is participating, promotion already ended');
-                        let user = getUser();
+                        let user = await getUser();
+                        let participation = await getParticipation(userId, promoId);
                         //Show promotion (with user details)
-                        console.log('user is: '+ user);
-                        showPromotion(promotion, user, requestType);
+                        console.log('user is: ' + user);
+                        showPromotion(promotion, user, participation, requestType);
                     }
                 }
             }
@@ -268,6 +273,33 @@ module.exports = {
      * promotionController.participate()
      */
     doParticipate: async function (req, res) {
+
+let user = {}
+
+	user.userId = req.cookies.userId;
+	user.firstName = req.body.firstName;
+	user.lastName =req.body.lastName;
+//	user.sex 
+//	user.age
+	user.email =req.body.email;
+	user.phone = req.body.phone;
+//	user.password = req.body.firstName;
+
+//	user.onesignalId = req.body.firstName;
+	user.googleId = req.body.googleId;
+	user.facebookId = req.body.facebookId;
+	user.profileImg = req.body.profileImg;
+	
+//	user.postCode = req.body.firstName;
+	user.hasPushEnabled = false;
+	user.hasGeolocEnabled = false;
+	user.hasProfileCompleted = false;
+
+
+if(!existsUser(user)){
+    await newUser(participation);
+}
+
 
         let participation = {};
 
@@ -282,6 +314,7 @@ module.exports = {
 
 
         await newParticipation(participation);
+
     },
 
     /**

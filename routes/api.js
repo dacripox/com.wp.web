@@ -5,9 +5,9 @@ var router = express.Router();
 
 
 /*
- * GET
+ * POST
  */
-router.get('/participate', promotionController.doParticipate);
+router.post('/participate', promotionController.doParticipate);
 
 
 /*
