@@ -142,7 +142,7 @@ let existsUser = async (user) => {
     return response;
 };
 
-let chechRefFriend = async (refFriend) => {
+let checkRefFriend = async (refFriend) => {
     console.log('check if user already exists, before participating');
     let formData = {};
     let response = await request.get({ url: 'http://localhost:3000/user/id/' + refFriend, form: formData });
@@ -292,10 +292,23 @@ module.exports = {
                             }).then(async (alreadyRefered) => {
                                 if (!alreadyRefered && userId != refFriend) { //Special cookie for limit once incrementations
                                     console.log('Setting special points cookie');
-
-                                    let refFriendObject = await chechRefFriend(refFriend);
+                                    let refFriendObject = await checkRefFriend(refFriend);
+                                    console.log(refFriendObject);
                                     //If refFriend exists in data base
-                                    if (refFriendObject._id) {
+                                    let getAttbFromObj =  (obj, attb) => {
+                                        
+                                        console.log('el objecto es: '+obj);
+                                         return new Promise((resolve, reject) => {
+                                             
+                                            let res = _.get(obj, attb);
+                                            console.log('res:'+res);
+                                            resolve(res);
+                                        })
+                                    }
+                                    let refFriendId = getAttbFromObj(refFriendObject, '_id');
+                                    console.log(refFriendId);
+                                    if (refFriendId) {
+                                        console.log('refFriend exists');
                                         await incrementPoints(refFriend, promoId, 1);
                                         await incrementVisualization(refFriend, promoId);
 
@@ -303,11 +316,13 @@ module.exports = {
                                         let cookiePromotions = req.cookies.promotions;
                                         let p = new Promise(() => {
                                             cookiePromotions.forEach((promotion) => {
-                                                if (promotion.promoId == promoId && !promotion.refFriend) {
+                                                console.log(promotion);
+                                                if (promotion.promoId == promoId && promotion.refFriend == undefined) {
+                                                    console.log('asdasdas');
                                                     resolve(promotion);
                                                 }
-                                                resolve(false);
                                             });
+                                            resolve(false);
                                         });
                                         p.then((oldCookiePromotion) => {
                                             if (oldCookiePromotion) {
@@ -319,7 +334,7 @@ module.exports = {
                                                     'refFriend_id': refFriendObject._id
                                                 };
                                                 let newCookiePromotions = [];
-                                                let p = new Promise((resolve,reject) => {
+                                                let p = new Promise((resolve, reject) => {
                                                     cookiePromotions.forEach(
                                                         (promotion) => {
                                                             if (promotion.promoId != promoId) {
