@@ -2,6 +2,8 @@ let fetch = require('isomorphic-fetch');
 var mobileDetect = require('mobile-detect');
 var userController = require('./userController');
 var request = require('request-promise');
+var _ = require('lodash');
+var cookieParser = require('cookie-parser')
 
 let getUser = async (userId) => {
 
@@ -140,6 +142,13 @@ let existsUser = async (user) => {
     return response;
 };
 
+let chechRefFriend = async (refFriend) => {
+    console.log('check if user already exists, before participating');
+    let formData = {};
+    let response = await request.get({ url: 'http://localhost:3000/user/id/' + refFriend, form: formData });
+    return response;
+};
+
 
 
 
@@ -155,6 +164,8 @@ module.exports = {
     showPromotion: async function (req, res) {
         const promoId = req.params.promoId;
         const refFriend = req.params.refFriend;
+
+
 
         let requestType = 'desktop';
         //Check if mobile 
@@ -218,7 +229,7 @@ module.exports = {
 
                         if (alreadyParticipating == true) {
                             console.log('user already participating');
-                            let user = await getUser();
+                            let user = await getUser(userId);
                             let participation = await getParticipation(userId, promoId);
                             //Show promotion (with user details)
                             console.log('user is: ' + user);
@@ -228,19 +239,120 @@ module.exports = {
                             console.log('user not participating ');
                             //Show promotion (new user)
                             showPromotion(promotion, {}, {}, requestType);
-                        }
-                    }
-                    //If has refFriend, increment points
-                    if (refFriend) {
-                        if (!req.cookies.p && userId!=refFriend) { //Special cookie for limit once incrementations
-                            console.log('Setting special points cookie');
-                            incrementPoints(refFriend, promoId, 1);
-                            incrementVisualization(refFriend, promoId);
-                            res.cookie('p', '1', { expires: new Date(Date.now() + 2592000000000) });
-                        }
+                        } //end if-else user already participating
+                    }// end if-else (creat new user / get existing user)
+
+
+
+                    //Crate promotioN cookie in promotionS cookie (without refFriend)
+                    let cookiePromotions;
+                    if (!req.cookies.promotions) {
+                        cookiePromotions = [];
+                    } else {
+                        cookiePromotions = req.cookies.promotions;
                     }
 
-                }
+                    console.log(cookiePromotions);
+                    //let exists = false;
+                    let p = new Promise((resolve, reject) => {
+                        cookiePromotions.forEach((promotion) => {
+                            if (promotion.promoId == promoId) {
+                                console.log('cookie promotion for ' + promoId + ' already exists');
+                                resolve(true);
+                            }
+                        });
+                        resolve(false);
+                    })
+                    p.then((exists) => {
+                        console.log('exists: ' + exists);
+                        if (!exists) {
+                            var newCookiePromotion = {
+                                'promoId': promoId,
+                                'promotion_id': promotion._id,
+                            };
+                            console.log('new cookie promotion: ' + newCookiePromotion);
+                            cookiePromotions.push(newCookiePromotion);
+                            console.log('cookie promotions: ' + cookiePromotions);
+                            res.cookie('promotions', cookiePromotions, { expires: new Date(Date.now() + 2592000000000) });
+                        }
+                        console.log('cookie promotion exists: ' + exists);
+                    }).then(() => {
+
+                        //If has refFriend, increment points and add refFriend to cookie promotion
+                        //let alreadyRefered = false;
+                        if (refFriend) {
+                            let cookiePromotions = req.cookies.promotions;
+                            new Promise((resolve, reject) => {
+                                cookiePromotions.forEach((promotion) => {
+                                    if (promotion.refFriend) {
+                                        resolve(true);
+                                    }
+                                });
+                                resolve(false);
+                            }).then(async (alreadyRefered) => {
+                                if (!alreadyRefered && userId != refFriend) { //Special cookie for limit once incrementations
+                                    console.log('Setting special points cookie');
+
+                                    let refFriendObject = await chechRefFriend(refFriend);
+                                    //If refFriend exists in data base
+                                    if (refFriendObject._id) {
+                                        await incrementPoints(refFriend, promoId, 1);
+                                        await incrementVisualization(refFriend, promoId);
+
+                                        //Crate promotioN cookie in promotionS cookie (with refFriend)
+                                        let cookiePromotions = req.cookies.promotions;
+                                        let p = new Promise(() => {
+                                            cookiePromotions.forEach((promotion) => {
+                                                if (promotion.promoId == promoId && !promotion.refFriend) {
+                                                    resolve(promotion);
+                                                }
+                                                resolve(false);
+                                            });
+                                        });
+                                        p.then((oldCookiePromotion) => {
+                                            if (oldCookiePromotion) {
+                                                console.log('oldCookiePromotion:' + oldCookiePromotion);
+                                                var newCookiePromotion = {
+                                                    'promoId': oldCookiePromotion.promoId,
+                                                    'promotion_id': oldCookiePromotion.promotion_id,
+                                                    'refFriendId': refFriend,
+                                                    'refFriend_id': refFriendObject._id
+                                                };
+                                                let newCookiePromotions = [];
+                                                let p = new Promise((resolve,reject) => {
+                                                    cookiePromotions.forEach(
+                                                        (promotion) => {
+                                                            if (promotion.promoId != promoId) {
+                                                                newCookiePromotions.push(promotion);
+                                                            }
+                                                        }
+                                                    );
+                                                    resolve();
+                                                });
+
+                                                p.then(() => {
+                                                    newCookiePromotions.push(newCookiePromotion);
+                                                    console.log('newCookiePromotions:' + newCookiePromotions);
+                                                    res.cookie('promotions', newCookiePromtions, { expires: new Date(Date.now() + 2592000000000) });
+                                                }).catch((err) => {
+                                                    console.log(err);
+                                                });
+
+                                            }
+                                        }).catch((errr) => {
+                                            console.log(errr);
+                                        });
+                                    } //end refFriend exists, increment points
+                                } // end if not already have added points
+                            });
+                        }
+
+                    }).catch((errr) => {
+                        console.log(errr);
+                    });
+
+
+                } //end if-else promotion (make raffle / not make raffle )
             } else {
                 console.log('promotion already ended');
                 var userId = req.cookies.userId;
@@ -257,7 +369,7 @@ module.exports = {
                     let alreadyParticipating = await isParticipating(userId, promoId);
                     if (alreadyParticipating !== false) {
                         console.log('user is participating, promotion already ended');
-                        let user = await getUser();
+                        let user = await getUser(userId);
                         let participation = await getParticipation(userId, promoId);
                         //Show promotion (with user details)
                         console.log('user is: ' + user);
@@ -274,46 +386,46 @@ module.exports = {
      */
     doParticipate: async function (req, res) {
 
-let user = {}
+        let user = {}
+        user.userId = req.cookies.userId;
+        user.firstName = req.body.firstName;
+        user.lastName = req.body.lastName;
+        //	user.sex 
+        //	user.age
+        user.email = req.body.email;
+        user.phone = req.body.phone;
+        //	user.password = req.body.firstName;
 
-	user.userId = req.cookies.userId;
-	user.firstName = req.body.firstName;
-	user.lastName =req.body.lastName;
-//	user.sex 
-//	user.age
-	user.email =req.body.email;
-	user.phone = req.body.phone;
-//	user.password = req.body.firstName;
+        //	user.onesignalId = req.body.firstName;
+        user.googleId = req.body.googleId;
+        user.facebookId = req.body.facebookId;
+        user.profileImg = req.body.profileImg;
 
-//	user.onesignalId = req.body.firstName;
-	user.googleId = req.body.googleId;
-	user.facebookId = req.body.facebookId;
-	user.profileImg = req.body.profileImg;
-	
-//	user.postCode = req.body.firstName;
-	user.hasPushEnabled = false;
-	user.hasGeolocEnabled = false;
-	user.hasProfileCompleted = false;
+        //	user.postCode = req.body.firstName;
+        user.hasPushEnabled = false;
+        user.hasGeolocEnabled = false;
+        user.hasProfileCompleted = false;
 
-
-if(!existsUser(user)){
-    await newUser(participation);
-}
-
+        let currentUser = await existsUser(user);
+        if (_.isEmpty(user)) {
+            let currentUser = await newUser(user);
+        }
 
         let participation = {};
 
-        participation.promoId = req.cookies.promoId;
-        participation.promotion = req.cookies.promotion_id
+        participation.promoId = req.cookies.promotion.promoId;
+        participation.promotion = req.cookies.promotion.promotion_id
 
-        participation.userId = req.cookies.userId;
-        participation.user = req.cookies.user_id;
+        participation.userId = currentUser.userId;
+        participation.user = currentUser._id;
 
-        participation.refFriendId = req.cookies.refFriend
-        participation.refFriend = req.cookies.refFriend_id;
+        participation.refFriendId = req.cookies.promotion.refFriend
+        participation.refFriend = req.cookies.promotion.refFriend_id;
 
 
         await newParticipation(participation);
+
+
 
     },
 
