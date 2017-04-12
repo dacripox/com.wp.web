@@ -1,45 +1,47 @@
-  <div class="ui modal profile">
-   <i class="close icon"></i>
-   <div class="header">
+<div class="ui modal profile">
+  <i class="close icon"></i>
+  <div class="header">
     Mi perfil
-   </div>
-   <div class="content">
+  </div>
+  <div class="content">
 
     <form class="ui form">
 
-     <div class="field">
-      <label><i class="user icon"></i>Nombre y apellidos</label>
-      <div class="two fields">
-       <div class="field">
-        <input type="text" name="shipping[first-name]" placeholder="Nombre" value="{{user.firstName}}">
-       </div>
-       <div class="field">
-        <input type="text" name="shipping[last-name]" placeholder="Apellidos" value="{{user.lastName}}">
-       </div>
+      <div class="field">
+        <label><i class="user icon"></i>Nombre y apellidos</label>
+        <div class="two fields">
+          <div class="field">
+            <input type="text" name="shipping[first-name]" placeholder="Nombre" value="{{user.firstName}}">
+          </div>
+          <div class="field">
+            <input type="text" name="shipping[last-name]" placeholder="Apellidos" value="{{user.lastName}}">
+          </div>
+        </div>
       </div>
-     </div>
 
-     <div class="field">
-      <div class="three fields">
-       <div class="field">
-        <label><i class="mail icon"></i>Correo electrónico</label>
-        <input type="text" name="" placeholder="micuenta@dominio.com" value="{{user.email}}">
-       </div>
+      <div class="field">
+        <div class="three fields">
+          <div class="field">
+            <label><i class="mail icon"></i>Correo electrónico</label>
+            <input type="text" name="" placeholder="micuenta@dominio.com" value="{{user.email}}">
+          </div>
 
-       <div class="field">
-        <label><i class="call icon"></i>Teléfono móvil</label>
-        <input type="text" name="" placeholder="600100200" value="{{user.phone}}">
-       </div>
-       
-       <div class="field">
-        <label><i class="lock icon"></i>Contraseña</label>
-        <input type="password" name="" placeholder="********" value="{{user.password}}">
-       </div>
+          <div class="field">
+            <label><i class="call icon"></i>Teléfono móvil</label>
+            <input type="text" name="" placeholder="600100200" value="{{user.phone}}">
+          </div>
+          {{!--
+          <div class="field">
+            <label><i class="lock icon"></i>Contraseña</label>
+            <input type="password" name="" placeholder="********" value="{{user.password}}">
+          </div>
+          --}}
+
+        </div>
       </div>
-     </div>
 
 
 
     </form>
-   </div>
   </div>
+</div>

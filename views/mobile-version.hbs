@@ -1,158 +1,192 @@
-{{!< default}}
- 
-{{#contentFor 'pageStyles'}}
-<style>
-</style>
-{{/contentFor}}
+{{!< default}} 
 
+{{#contentFor 'pageStyles'}} <style>
+      </style>
+      {{/contentFor}} 
+      
+      {{#contentFor 'customScripts'}}
+      <script>
+            var endPromotionDateStr = "{{{promotion.endDate}}}";
+            var endPromotionDate = new Date(endPromotionDateStr);
+            var promoId = "{{{promotion.promoId}}}";
+            var promoEnded = "{{{promotion.promoEnded}}}";
+            
 
-{{#contentFor 'googleAnalyticsScripts'}}
-<script type="text/javascript">
-</script>
-{{/contentFor}}
-
-
- {{#contentFor 'OneSignalScripts'}}
-<script type="text/javascript">
-
-        function subscribe() {
-              OneSignal.push(["registerForPushNotifications"]);
-              event.preventDefault();
-        }
-
-
-        /*Initialize OneSignal SDK*/
-        var OneSignal = window.OneSignal || [];
-        OneSignal.push(["init", {
-              appId: "8821d4e1-cbef-499a-8f8f-c8d3e3db506f",
-              safari_web_id: 'web.onesignal.auto.2cb21d9d-922f-420a-8137-99f511b7fc1b',
-
-              autoRegister: false,
-              notifyButton: {
-                    enable: true /* Set to false to hide */
-              }
-        }]);
+      </script>
+      {{/contentFor}} 
+      
+      {{#contentFor 'googleAnalyticsScripts'}}
+      <script type="text/javascript">
 
 
 
-        /* Custom message asking for web push suscribe */
-        OneSignal.push(function() {
-              // If we're on an unsupported browser, do nothing
-              if (!OneSignal.isPushNotificationsSupported()) {
-                    return;
-              }
-              OneSignal.isPushNotificationsEnabled(function(isEnabled) {
-                    if (isEnabled) {
-                          // The user is subscribed to notifications
-                          // Don't show anything
-                    } else {
-                          document.getElementById("subscribe-link").addEventListener('click', subscribe);
-                          document.getElementById("subscribe-link").style.display = '';
-                    }
-              });
-        });
+      </script>
+      {{/contentFor}} 
 
-        /*Handle suscribe action to get OneSignal UUID for storing it with the User ID*/
-        OneSignal.push(function() {
-              OneSignal.on('subscriptionChange', function(isSubscribed) {
-                    if (isSubscribed) {
-                          // The user is subscribed
-                          //   Either the user subscribed for the first time
-                          //   Or the user was subscribed -> unsubscribed -> subscribed
-                          OneSignal.getUserId(function(userId) {
-                                // Make a POST call to your server with the user ID
-                          });
-                  
-                  
-                  //Attach Promotion ID to OneSignal UUID as a tag
-                  OneSignal.push(["sendTag", "promotionID", "anyID"]);
-                  
-                    }
-              });
-        });
+      {{#contentFor 'googleAnalyticsScripts'}}
+            <!-- Facebook Pixel Code -->
+            <script>
+            !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+            n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+            document,'script','https://connect.facebook.net/es_ES/fbevents.js');
+            fbq('init', '{{{promotion.facebookTrackingPixel}}}'); // Insert your pixel ID here.
+            fbq('track', 'PageView');
+            </script>
+            <noscript><img height="1" width="1" style="display:none"
+            src="https://www.facebook.com/tr?id={{{promotion.facebookTrackingPixel}}}&ev=PageView&noscript=1"
+            /></noscript>
+            <!-- DO NOT MODIFY -->
+            <!-- End Facebook Pixel Code -->
+      {{/contentFor}} 
 
-</script>
-{{/contentFor}}
- 
+      
+      
+      {{#contentFor 'OneSignalScripts'}}
+      <script type="text/javascript">
+            function subscribe() {
+                  OneSignal.push(["registerForPushNotifications"]);
+                  event.preventDefault();
+            }
 
 
+            /*Initialize OneSignal SDK*/
+            var OneSignal = window.OneSignal || [];
+            OneSignal.push(["init", {
+                  appId: "8821d4e1-cbef-499a-8f8f-c8d3e3db506f",
+                  safari_web_id: 'web.onesignal.auto.2cb21d9d-922f-420a-8137-99f511b7fc1b',
 
- <!--Sidebar Menu-->
-{{>sidebar-menu}}
- <!--end Sidebar Menu-->
+                  autoRegister: false,
+                  notifyButton: {
+                        enable: true /* Set to false to hide */
+                  }
+            }]);
 
- <!-- Page Contents-->
- <div class="pusher">
 
-  <!--Modal Login-->
-{{>modal-login}}
-  <!--end Modal Login-->
 
-    <!--Modal Report-->
-{{>modal-report}}
-  <!--end Modal Report-->
-  
-   <!--Modal Settings-->
-{{>modal-settings}}
+            /* Custom message asking for web push suscribe */
+            OneSignal.push(function () {
+                  // If we're on an unsupported browser, do nothing
+                  if (!OneSignal.isPushNotificationsSupported()) {
+                        return;
+                  }
+                  OneSignal.isPushNotificationsEnabled(function (isEnabled) {
+                        if (isEnabled) {
+                              // The user is subscribed to notifications
+                              // Don't show anything
+                        } else {
+                              document.getElementById("subscribe-link").addEventListener('click', subscribe);
+                              document.getElementById("subscribe-link").style.display = '';
+                        }
+                  });
+            });
 
-  <!--end Modal Settings-->
-  
-  <!--Modal Profile-->
-{{>modal-profile}}
+            /*Handle suscribe action to get OneSignal UUID for storing it with the User ID*/
+            OneSignal.push(function () {
+                  OneSignal.on('subscriptionChange', function (isSubscribed) {
+                        if (isSubscribed) {
+                              // The user is subscribed
+                              //   Either the user subscribed for the first time
+                              //   Or the user was subscribed -> unsubscribed -> subscribed
+                              OneSignal.getUserId(function (userId) {
+                                    // Make a POST call to your server with the user ID
+                              });
 
-  <!--end Modal Profile-->
-  
-  <!-- Modal Share Promo-->
 
-{{>modal-share-promo}}
-  <!--end Modal Share Promo->
+                              //Attach Promotion ID to OneSignal UUID as a tag
+                              OneSignal.push(["sendTag", "promotionID", "anyID"]);
+
+                        }
+                  });
+            });
+
+      </script>
+      {{/contentFor}}
+
+
+
+
+      <!--Sidebar Menu-->
+      {{>sidebar-menu}}
+      <!--end Sidebar Menu-->
+
+      <!-- Page Contents-->
+      <div class="pusher">
+
+            <!--Modal Login-->
+            {{>modal-login}}
+            <!--end Modal Login-->
+
+            <!--Modal Report-->
+            {{>modal-report}}
+            <!--end Modal Report-->
+
+            <!--Modal Settings-->
+            {{>modal-settings}}
+
+            <!--end Modal Settings-->
+
+            <!--Modal Profile-->
+            {{>modal-profile}}
+
+            <!--end Modal Profile-->
+
+            <!-- Modal Share Promo-->
+
+            {{>modal-share-promo}}
+            <!--end Modal Share Promo->
 
 
   <!-- Menu handler icon (mobile)-->
-  <div class="ui vertical segment web-title-container">
-   <div class="toc item">
-           <img class="ui fluid image logo" src="../assets/img/logo_1.png" alt="">
-           <i class="right-icon large sidebar icon"></i>
-   </div>
+            <div class="ui vertical segment web-title-container">
+                  <div class="toc item">
+                        <img class="ui fluid image logo" src="../assets/img/logo_1.png" alt="">
+                        <i class="right-icon large sidebar icon"></i>
+                  </div>
 
 
-  </div>
-  <!--Promotion image-->
-  <div class="image promo container">
-   <!-- <img class="ui fluid image" src="http://semantic-ui.com/images/wireframe/image.png">-->
+            </div>
+            <!--Promotion image-->
+            <div class="image promo container">
+                  <!-- <img class="ui fluid image" src="http://semantic-ui.com/images/wireframe/image.png">-->
 
-   {{!--<img class="ui fluid image promo" src="https://images.unsplash.com/photo-1418225043143-90858d2301b4?ixlib=rb-0.3.5&q=80&fm=jpg&crop=entropy&w=1080&fit=max&s=4801291798afca8b66391084f87d24f7" alt="">--}}
-   <img class="ui fluid image promo" src="{{promotion.promoImage}}" alt="">
-   <div class="text">
-    <h2 class="title"> <i class=" large hourglass empty icon"></i> La promoción ha finalizado </h2>
-    <p class="subtitle">Comprueba si has sido premiado</p>
-   </div>
-  </div>
+                  {{!--
+                  <img class="ui fluid image promo" src="https://images.unsplash.com/photo-1418225043143-90858d2301b4?ixlib=rb-0.3.5&q=80&fm=jpg&crop=entropy&w=1080&fit=max&s=4801291798afca8b66391084f87d24f7"
+                        alt="">--}}
+                        <img class="ui fluid image promo" src="{{promotion.promoImage}}" alt="">
+                   {{#if promotion.promoEnded}}     <div class="text">
+                              <h2 class="title"> <i class=" large hourglass empty icon"></i> La promoción ha finalizado </h2>
+                              <p class="subtitle">Comprueba si has sido premiado</p>
+                        </div>
+                        {{/if}}
+            </div>
 
-  <!--Promotion title-->
-  <h1 class="ui header title promo-title">{{promotion.promoTitle}}</h1>
-
-
-
-  <!--Winners-->
-{{>winners}}
-  <!-- end Winners-->
+            <!--Promotion title-->
+            <h1 class="ui header title promo-title">{{promotion.promoTitle}}</h1>
 
 
 
-  <!--Promotion information accordion-->
-  {{>promo-accordion}}
-  <!--end Promotion information accordion-->
-
-<!--Footer-->
-{{>footer}}
-<!--end footer-->
-
-<!--Sticky menu (bottom)-->
-{{>sticky-menu}}
-<!--end Sticky menu (bottom)-->
+            <!--Winners-->
+            {{#if winners}} {{>winners}} {{/if}}
+            <!-- end Winners-->
 
 
 
+            <!--Promotion information accordion-->
+            {{>promo-accordion}}
+            <!--end Promotion information accordion-->
 
- </div><!--end pusher-->
+            <!--Footer-->
+            {{>footer}}
+            <!--end footer-->
+
+            <!--Sticky menu (bottom)-->
+            {{>sticky-menu}}
+            <!--end Sticky menu (bottom)-->
+
+
+
+
+      </div>
+      <!--end pusher-->

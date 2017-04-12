@@ -1,3 +1,62 @@
+
+
+var beforePoints = -1
+    function updatePoints() {
+        $.ajax({
+            type: "GET",
+            url: '//' + window.location.host + '/api/participation/info',
+            dataType: "json",
+            data: {
+                userId: $.cookie("userId"),
+                promoId: promoId
+            },
+            success: function (data) {
+                console.info("Conexión establecida con BD");
+
+                //Actualiza la variable de puntos anterior por primera vez para tener constancia de los cambios
+                if (puntos == -1) {
+                    puntos = data.puntos;
+                }
+
+                console.log(data);
+
+
+
+                $(".amigos_participando").html(data.amigos + (data.amigos == 1 ? " sólo amigo participando" : " amigos están participando"));
+                $(".visualizaciones").html(data.visualizaciones + (data.visualizaciones == 1 ? " amigo" : " amigos") + " han accedido a tu enlace");
+                $(".puntos").html(data.puntos + (data.puntos == 1 ? " punto" : " puntos") + " conseguidos");
+
+                $(".amigos_participando_num").html(data.amigos);
+                $(".visualizaciones_num").html(data.visualizaciones + (data.visualizaciones == 1 ? " amigo tuyo ha" : " amigos tuyos han")+ " participado");
+                $(".puntos_num").html(data.puntos + (data.puntos == 1 ? " punto" : " puntos"));
+
+
+                if ((data.puntos - puntos) > 0 && (data.puntos - puntos) < 5) {
+                    actualizarNotificacion(0);
+                } else if ((data.puntos - puntos) >= 5) {
+                    actualizarNotificacion(1);
+                }
+
+                puntos = data.puntos;
+            },
+            error: function () {
+                console.error("Datos no disponibles");
+            }
+        });
+    }
+
+
+    //Actualización de datos de participantes cada 5 segundos =====================
+    updatePoints();
+    var bucleActualizacionPuntos = setInterval(function () {
+        if(promoEnded == 'false') {
+            updatePoints();
+        } else{
+            clearInterval(bucleActualizacionPuntos);
+        }
+    }, 10000);
+
+
 /*Fixed menu open-close*/
 $('.ui.sticky.fixed.bottom').click(function () {
   $('.angle.up.icon.link').toggle();
@@ -29,8 +88,9 @@ function countDown() {
   //var vector_hora_limite = fecha_limite.split(" ");
   //var fecha_limite_objeto = new Date(vector_fecha_limite[2].substring(0, 4), vector_fecha_limite[1] - 1, vector_fecha_limite[0], vector_hora_limite[1].substring(0, 2), vector_hora_limite[1].substring(3, 5), '00', '00');
 
-  var endDate = new Date();
-  endDate.setDate(endDate.getDate() + 5);
+  //var endDate = new Date(); //debug date
+  //endDate.setDate(endDate.getDate() + 5);
+  var endDate = endPromotionDate;
   console.log("today: " + today.toLocaleString());
   console.log("finaliza el: " + endDate.toLocaleString());
 
@@ -61,6 +121,7 @@ function downTimer(duration, display) {
     if (--timer < 0) {
       console.log("promoción acaba de finalizar");
       clearInterval(periode);
+      window.location.reload(true); //reload promotion
     }
   }, 1000);
   return periode; //devuelve el Intervalo para ser cancelado postriormente
@@ -123,12 +184,12 @@ function doParticipate(email, phone, firstName, lastName, facebookId, googleId, 
 
   var form = {
     "email": email,
-    "phone":phone,
-    "firstName":firstName,
-    "lastName":lastName, 
-    "facebookId":facebookId, 
-    "googleId":googleId, 
-    "profileImg":profileImg 
+    "phone": phone,
+    "firstName": firstName,
+    "lastName": lastName,
+    "facebookId": facebookId,
+    "googleId": googleId,
+    "profileImg": profileImg
   };
 
   $.ajax({
@@ -323,7 +384,7 @@ function makeApiCall() {
     var profileImage = resp.result.photos[0].url;
     var id = resp.nicknames[0].metadata.source.id;
 
- doParticipate(email, undefined, givenName, familyName,undefined,id, profileImage);
+    doParticipate(email, undefined, givenName, familyName, undefined, id, profileImage);
 
     var p = document.createElement('p');
     p.appendChild(document.createTextNode('Hello, ' + name + '! Your email is: ' + email));
@@ -338,26 +399,26 @@ $(document).ready(function () {
 
 
   //Funcion para notificar la obtencion de nuevos puntos
-  function notificarPuntos(tipo) {
+  function notificarPuntos(tipo, puntos) {
 
     var textoMensaje, tipoAlerta, puntos;
     switch (tipo) {
       case 0:
         textoMensaje = 'Nuevo amigo visitando tu enlace. Anímalos a participar.';
         tipoAlerta = 'success';
-        puntos = 1;
+       // puntos = 1;
         navigator.vibrate([100, 0, 90]);
         break;
       case 1:
         textoMensaje = 'Nuevo amigo participando. Sigue compartiendo.';
         tipoAlerta = 'warning';
-        puntos = 5;
+       // puntos = 10;
         navigator.vibrate([120, 0, 100]);
         break;
       case 3:
-        textoMensaje = 'Te regalamos 5 puntos para empezar. Invita a tus amigos para tener más posibilidades de ganar.';
+        textoMensaje = 'Te regalamos unos puntos para empezar. Invita a tus amigos para tener más posibilidades de ganar.';
         tipoAlerta = 'warning';
-        puntos = 5;
+        //puntos = 5;
         navigator.vibrate([120, 0, 100]);
         break;
     }
@@ -380,12 +441,12 @@ $(document).ready(function () {
 
   var notificacion = null;
 
-  function actualizarNotificacion(tipo) {
+  function actualizarNotificacion(tipo,puntos) {
 
     if (notificacion != null) {
       notificacion.close();
     }
-    notificacion = notificarPuntos(tipo);
+    notificacion = notificarPuntos(tipo,puntos);
 
     //quitar al hacer clic
     $('.alert').click(function () {
@@ -398,29 +459,86 @@ $(document).ready(function () {
   }
 
 
+  var state = false;
+  function checkIfValidLoginEnableButton() {
+    var checked = $('.accept-terms').is(':checked');
+    if (state && checked) {
+      $('button.login-participate').prop('disabled', false);
+    } else {
+      $('button.login-participate').prop('disabled', true);
+    }
+  }
 
 
+  $('.accept-terms').change(function () {
+    checkIfValidLoginEnableButton();
+  })
 
+  $('.participate-input').on('keyup change paste  ', function (e) {
 
+    var $icon = $('.verify-icon'),
+      type = '';
 
-
-
-
-
-
-  actualizarNotificacion(0);
-
-  $('.participate-input').on('keyup  ', function (e) {
     if ($(this).val().length > 0) {
       $('.participate-form-ext').show();
     } else {
       $('.participate-form-ext').hide();
     }
+
+
+
+    var regEmail = /[a-zA-Z0-9]+(?:(\.|_)[A-Za-z0-9!#$%&'*+/=?^`{|}~-]+)*@(?!([a-zA-Z0-9]*\.[a-zA-Z0-9]*\.[a-zA-Z0-9]*\.))(?:[A-Za-z0-9](?:[a-zA-Z0-9-]*[A-Za-z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?/;
+    var regMovil = /[6|7]{1}[0-9]{8}/;
+    var regNoSpaces = /^\S+$/;
+
+    var inputFormParticipate = $('.participate-input').val();
+
+
+
+    // Datos no introducidos-------------------------------------
+
+    if (inputFormParticipate.length === 0) {
+      state = false;
+    }
+
+    // Movil o Email valido -------------------------------------
+
+    if (regNoSpaces.test(inputFormParticipate) && regMovil.test(inputFormParticipate) && inputFormParticipate.length == 9) {
+      state = true;
+      type = 'phone';
+    } else if (regNoSpaces.test(inputFormParticipate) && regEmail.test(inputFormParticipate)) {
+      state = true;
+      type = 'email';
+    } else {
+      state = false;
+      type = '';
+
+    }
+
+    // Comprobar estado para cambiar imagen error/ok -------------
+    if (state) {
+
+      $icon.attr('class', 'green icon checkmark verify-icon');
+      checkIfValidLoginEnableButton();
+
+    } else {
+
+      $icon.attr('class', 'red icon remove verify-icon');
+      checkIfValidLoginEnableButton();
+
+      if ($(this).val() <= 0) {
+
+        $icon.attr('class', 'verify-icon');
+      }
+    }
   });
 
-  $(".accept-terms").click(function () {
-    if ($(this).is(':checked')) alert("checked");
-  });
+
+
+  actualizarNotificacion(0,5);
+
+
+
 
   /*jQuery selectors triggerers*/
   $('.geoloc-button').click(geoFindMe);

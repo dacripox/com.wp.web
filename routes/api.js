@@ -3,6 +3,12 @@ var promotionController = require('../controllers/promotionController.js');
 var userController = require('../controllers/userController.js');
 var router = express.Router();
 
+/*
+ * GET
+ */
+router.get('/participation/info', promotionController.participationInfo);
+
+
 
 /*
  * POST

@@ -44,16 +44,18 @@
 
 
         <div class="seven wide column">
-         
-         <button class="hidden green large right floated  ui button participate">
+ {{#unless participation}}        
+         <button class="green large right floated  ui button participate">
           <i class="heart icon"></i>Participar
          </button>
 
+         {{/unless}}
+{{#if participation}}
          <button class=" green large right floated  ui button share">
           <div><i class="small star icon"></i>Conseguir
            <br> más puntos </div>
          </button>
-
+{{if}}
         </div>
        </div>
 

@@ -142,13 +142,19 @@ let existsUser = async (user) => {
     return response;
 };
 
-let checkRefFriend = async (refFriend) => {
-    console.log('check if user already exists, before participating');
+let checkRefFriend = async (refFriend, cb) => {
+    console.log('check if redFriend already exists, before increment points');
     let formData = {};
-    let response = await request.get({ url: 'http://localhost:3000/user/id/' + refFriend, form: formData });
-    return response;
-};
+    request.get({ url: 'http://localhost:3000/user/id/' + refFriend, form: formData })
+        .then(function (response) {
+            // return response;
+            cb(response);
+        }).catch((errr) => {
+            if (errr.statusCode == 404) return {};
+            else console.log(errr);
+        });
 
+};
 
 
 
@@ -204,15 +210,148 @@ module.exports = {
             res.render('promotion-not-found', { title: promotion.promoTitle, promoId: promoId });
         } else {
             if (!promotion.promoEnded) {
+
+
                 if (promotion.endDate > Date.now()) {
                     console.log('promotion ended now');
                     //TODO: Check as ended 
                     //Make the raffle
                     //Refresh page
+
                 } else {
                     console.log('promotion not ended');
 
                     var userId = req.cookies.userId;
+
+
+
+                    //Crate promotioN cookie in promotionS cookie (without refFriend)
+                    let cookiePromotions;
+                    if (!req.cookies.promotions) {
+                        cookiePromotions = [];
+                    } else {
+                        cookiePromotions = req.cookies.promotions;
+                    }
+
+                    console.log(cookiePromotions);
+                    //let exists = false;
+                    let p = new Promise((resolve, reject) => {
+                        cookiePromotions.forEach((promotion) => {
+                            if (promotion.promoId == promoId) {
+                                console.log('cookie promotion for ' + promoId + ' already exists');
+                                resolve(true);
+                            }
+                        });
+                        resolve(false);
+                    })
+                    p.then((cookiePromoExist) => {
+                        console.log('exists: ' + cookiePromoExist);
+                        if (!cookiePromoExist) {
+                            var newCookiePromotion = {
+                                'promoId': promoId,
+                                'promotion_id': promotion._id,
+                            };
+                            console.log('new cookie promotion: ' + newCookiePromotion);
+                            cookiePromotions.push(newCookiePromotion);
+                            console.log('cookie promotions: ' + cookiePromotions);
+                            res.cookie('promotions', cookiePromotions, { expires: new Date(Date.now() + 2592000000000) });
+                        }
+                        console.log('cookie promotion exists: ' + cookiePromoExist);
+                    }).then(() => {
+
+                        //If has refFriend, increment points and add refFriend to cookie promotion
+                        //let alreadyRefered = false;
+                        if (refFriend) {
+                            let cookiePromotions = req.cookies.promotions;
+                            new Promise((resolve, reject) => {
+                                cookiePromotions.forEach((promotion) => {
+                                    if (promotion.refFriend) {
+                                        resolve(true);
+                                    }
+                                });
+                                resolve(false);
+                            }).then(async (alreadyRefered) => {
+
+
+                                ////////////////////////////////
+                                if (!alreadyRefered && userId != refFriend/*not same user*/) { //Special cookie for limit once incrementations
+                                    console.log('Setting special points cookie');
+
+                                    await incrementPoints(refFriend, promoId, 1);
+                                    await incrementVisualization(refFriend, promoId);
+
+                                    //Crate promotioN cookie in promotionS cookie (with refFriend)
+                                    let cookiePromotions = req.cookies.promotions;
+                                    let p = new Promise((resolve, reject) => {
+                                        cookiePromotions.forEach((promotion) => {
+                                            console.log(promotion);
+                                            if (promotion.promoId == promoId && promotion.refFriend == undefined) {
+                                                resolve(promotion);
+                                            }
+                                        });
+                                        resolve(false);
+                                    });
+                                    p.then((oldCookiePromotion) => {
+                                        if (oldCookiePromotion) {
+                                            console.log('oldCookiePromotion:' + oldCookiePromotion);
+                                            var newCookiePromotion = {
+                                                'promoId': oldCookiePromotion.promoId,
+                                                'promotion_id': oldCookiePromotion.promotion_id,
+                                                'refFriendId': refFriend
+                                                //    ,'refFriend_id': refFriendObject._id
+                                            };
+                                            let p = new Promise((resolve, reject) => {
+                                                let newCookiePromotions = [];
+                                                cookiePromotions.forEach(
+                                                    (promotion) => {
+                                                        if (promotion.promoId != promoId) {
+                                                            newCookiePromotions.push(promotion);
+                                                        }
+                                                    }
+                                                );
+                                                resolve(newCookiePromotions);
+                                            });
+
+                                            p.then((newCookiePromotions) => {
+                                                newCookiePromotions.push(newCookiePromotion);
+                                                console.log('newCookiePromotions:' + newCookiePromotions);
+                                                res.cookie('promotions', newCookiePromotions, { expires: new Date(Date.now() + 2592000000000) });
+
+                                                //continue
+                                            }).catch((err) => {
+                                                console.log(err);
+                                            });
+
+                                        } else {
+
+                                        }
+                                    }).catch((errr) => {
+                                        console.log(errr);
+                                    });
+
+                                } // end if not already have added points
+                                else {
+
+                                }
+                            } //end if
+                                ////////////////////////////////////////////////////
+
+
+                                ).catch((errr) => {
+                                    console.log(errr);
+                                });
+                        } else {
+
+                        }
+                    });
+
+                } //end if-else promotion (make raffle / not make raffle)
+
+
+
+                setTimeout(async () => {
+
+
                     //If user not set in Cookie, create one user and set to cookie
                     if (userId == undefined) {
                         console.log('creating user id');
@@ -243,131 +382,9 @@ module.exports = {
                     }// end if-else (creat new user / get existing user)
 
 
-
-                    //Crate promotioN cookie in promotionS cookie (without refFriend)
-                    let cookiePromotions;
-                    if (!req.cookies.promotions) {
-                        cookiePromotions = [];
-                    } else {
-                        cookiePromotions = req.cookies.promotions;
-                    }
-
-                    console.log(cookiePromotions);
-                    //let exists = false;
-                    let p = new Promise((resolve, reject) => {
-                        cookiePromotions.forEach((promotion) => {
-                            if (promotion.promoId == promoId) {
-                                console.log('cookie promotion for ' + promoId + ' already exists');
-                                resolve(true);
-                            }
-                        });
-                        resolve(false);
-                    })
-                    p.then((exists) => {
-                        console.log('exists: ' + exists);
-                        if (!exists) {
-                            var newCookiePromotion = {
-                                'promoId': promoId,
-                                'promotion_id': promotion._id,
-                            };
-                            console.log('new cookie promotion: ' + newCookiePromotion);
-                            cookiePromotions.push(newCookiePromotion);
-                            console.log('cookie promotions: ' + cookiePromotions);
-                            res.cookie('promotions', cookiePromotions, { expires: new Date(Date.now() + 2592000000000) });
-                        }
-                        console.log('cookie promotion exists: ' + exists);
-                    }).then(() => {
-
-                        //If has refFriend, increment points and add refFriend to cookie promotion
-                        //let alreadyRefered = false;
-                        if (refFriend) {
-                            let cookiePromotions = req.cookies.promotions;
-                            new Promise((resolve, reject) => {
-                                cookiePromotions.forEach((promotion) => {
-                                    if (promotion.refFriend) {
-                                        resolve(true);
-                                    }
-                                });
-                                resolve(false);
-                            }).then(async (alreadyRefered) => {
-                                if (!alreadyRefered && userId != refFriend) { //Special cookie for limit once incrementations
-                                    console.log('Setting special points cookie');
-                                    let refFriendObject = await checkRefFriend(refFriend);
-                                    console.log(refFriendObject);
-                                    //If refFriend exists in data base
-                                    let getAttbFromObj =  (obj, attb) => {
-                                        
-                                        console.log('el objecto es: '+obj);
-                                         return new Promise((resolve, reject) => {
-                                             
-                                            let res = _.get(obj, attb);
-                                            console.log('res:'+res);
-                                            resolve(res);
-                                        })
-                                    }
-                                    let refFriendId = getAttbFromObj(refFriendObject, '_id');
-                                    console.log(refFriendId);
-                                    if (refFriendId) {
-                                        console.log('refFriend exists');
-                                        await incrementPoints(refFriend, promoId, 1);
-                                        await incrementVisualization(refFriend, promoId);
-
-                                        //Crate promotioN cookie in promotionS cookie (with refFriend)
-                                        let cookiePromotions = req.cookies.promotions;
-                                        let p = new Promise(() => {
-                                            cookiePromotions.forEach((promotion) => {
-                                                console.log(promotion);
-                                                if (promotion.promoId == promoId && promotion.refFriend == undefined) {
-                                                    console.log('asdasdas');
-                                                    resolve(promotion);
-                                                }
-                                            });
-                                            resolve(false);
-                                        });
-                                        p.then((oldCookiePromotion) => {
-                                            if (oldCookiePromotion) {
-                                                console.log('oldCookiePromotion:' + oldCookiePromotion);
-                                                var newCookiePromotion = {
-                                                    'promoId': oldCookiePromotion.promoId,
-                                                    'promotion_id': oldCookiePromotion.promotion_id,
-                                                    'refFriendId': refFriend,
-                                                    'refFriend_id': refFriendObject._id
-                                                };
-                                                let newCookiePromotions = [];
-                                                let p = new Promise((resolve, reject) => {
-                                                    cookiePromotions.forEach(
-                                                        (promotion) => {
-                                                            if (promotion.promoId != promoId) {
-                                                                newCookiePromotions.push(promotion);
-                                                            }
-                                                        }
-                                                    );
-                                                    resolve();
-                                                });
-
-                                                p.then(() => {
-                                                    newCookiePromotions.push(newCookiePromotion);
-                                                    console.log('newCookiePromotions:' + newCookiePromotions);
-                                                    res.cookie('promotions', newCookiePromtions, { expires: new Date(Date.now() + 2592000000000) });
-                                                }).catch((err) => {
-                                                    console.log(err);
-                                                });
-
-                                            }
-                                        }).catch((errr) => {
-                                            console.log(errr);
-                                        });
-                                    } //end refFriend exists, increment points
-                                } // end if not already have added points
-                            });
-                        }
-
-                    }).catch((errr) => {
-                        console.log(errr);
-                    });
+                }, 1000);
 
 
-                } //end if-else promotion (make raffle / not make raffle )
             } else {
                 console.log('promotion already ended');
                 var userId = req.cookies.userId;
@@ -435,7 +452,7 @@ module.exports = {
         participation.user = currentUser._id;
 
         participation.refFriendId = req.cookies.promotion.refFriend
-        participation.refFriend = req.cookies.promotion.refFriend_id;
+     //   participation.refFriend = req.cookies.promotion.refFriend_id;
 
 
         await newParticipation(participation);
@@ -449,6 +466,28 @@ module.exports = {
      */
     reportPromotion: function (req, res) {
         //TODO
+
+    },
+
+    /**
+     * promotionController.participationInfo()
+     */
+    participationInfo: function (req, res) {
+
+        let userId = req.query.userId;
+        let promoId = req.query.promoId;
+        let participation = getParticipation(userId, promoId);
+
+        console.log('Retriving participation info. for user: '+userId+' (promotion: '+promoId+')');
+        return res.json({
+            points: participation.points,
+            friendVisualNumber : participation.friendVisualNumber,
+            friendParticNumber: participation.friendParticNumber
+        });
+
+
+
+
     }
 
 

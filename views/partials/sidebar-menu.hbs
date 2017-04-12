@@ -1,22 +1,31 @@
- <div class="ui left vertical right menu sidebar">
+<div class="ui left vertical right menu sidebar">
+  {{!--
   <a class="item promotions">
-   <i class="marker icon disabled"></i> Promociones de mi zona
+    <i class="marker icon disabled"></i> Promociones de mi zona
   </a>
+    --}}
+
+  {{#if user}}
   <a class="item profile">
-   <i class="user icon"></i> Mi perfil
+    <i class="user icon"></i> Mi perfil
   </a>
+  {{/if}}
+  {{!--
   <a class="item settings">
-   <i class="setting icon"></i> Configuración
+    <i class="setting icon"></i> Configuración
   </a>
- 
+  --}}
+
+{{!--
   <div class="bottom-items">
     <a class="item faqs ">
-   <i class="question sign icon"></i> Preguntas frecuentes
-  </a>
+      <i class="question sign icon"></i> Preguntas frecuentes
+    </a>
     <a class="item report">
-   <i class="warning sign icon"></i> Reportar promoción
-  </a>
-  
+      <i class="warning sign icon"></i> Reportar promoción
+    </a>
+  --}}
+
   </div>
-  
- </div>
+
+</div>
