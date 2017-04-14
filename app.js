@@ -111,7 +111,7 @@ if (process.env.PRODUCTION == 1) {
 
  
   app.listen(process.env.PORT || 3001, function () {
-    console.log('WhatsPromo WebApp listening on port 3001!');
+    console.log('WhatsPromo WebApp listening on port '+(process.env.PORT || 3001)+'!');
 
     console.log(",--.   ,--.,--.               ,--.         ,------.                                 ");
     console.log("|  |   |  ||  ,---.  ,--,--.,-'  '-. ,---. |  .--. ',--.--. ,---. ,--,--,--. ,---.  ");
