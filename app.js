@@ -4,7 +4,11 @@ var app = express();
 var md5 = require('md5');
 var mainRoutes = require('./routes/index');
 var apiRoutes = require('./routes/api');
-var favicon = require('serve-favicon')
+var favicon = require('serve-favicon');
+var https = require('https');
+var fs = require('fs');
+require('dotenv').config();
+
 
 app.use(favicon(path.join(__dirname, 'assets/favicons', 'favicon.ico')))
 
@@ -39,11 +43,11 @@ hbs.registerHelper("math", function (lvalue, operator, rvalue, options) {
 });
 
 hbs.registerHelper("calculateAvgPoints", function (points, participants) {
-  return  parseInt(points / participants) || 0 ;
+  return parseInt(points / participants) || 0;
 });
 
 hbs.registerHelper("userIsParticipating", function (participation) {
-  return  participation ? true: false;
+  return participation ? true : false;
 });
 
 
@@ -92,15 +96,28 @@ app.use('/auth/stats', auth, stats);
 
 */
 
-
-app.listen(3001, function () {
-  console.log('WhatsPromo WebApp listening on port 3001!');
-
-  console.log(",--.   ,--.,--.               ,--.         ,------.                                 ");
-  console.log("|  |   |  ||  ,---.  ,--,--.,-'  '-. ,---. |  .--. ',--.--. ,---. ,--,--,--. ,---.  ");
-  console.log("|  |.'.|  ||  .-.  |' ,-.  |'-.  .-'(  .-' |  '--' ||  .--'| .-. ||        || .-. | ");
-  console.log("|   ,'.   ||  | |  |\\ '-'  |  |  |  .-'  `)|  | --' |  |   ' '-' '|  |  |  |' '-' ' ");
-  console.log("'--'   '--'`--' `--' `--`--'  `--'  `----' `--'     `--'    `---' `--`--`--' `---'  ");
-});
+if (process.env.PRODUCTION == 1) {
+ 
+ 
+  const options = {
+    key: fs.readFileSync(process.env.SSL_KEY || path.join(__dirname, 'local/key.pem')),
+    cert: fs.readFileSync(process.env.SSL_CERT || path.join(__dirname, 'local/cert.pem'))
+  };
 
 
+  https.createServer(options, app).listen(process.env.PORT || 3001);
+
+} else {
+
+ 
+  app.listen(process.env.PORT || 3001, function () {
+    console.log('WhatsPromo WebApp listening on port 3001!');
+
+    console.log(",--.   ,--.,--.               ,--.         ,------.                                 ");
+    console.log("|  |   |  ||  ,---.  ,--,--.,-'  '-. ,---. |  .--. ',--.--. ,---. ,--,--,--. ,---.  ");
+    console.log("|  |.'.|  ||  .-.  |' ,-.  |'-.  .-'(  .-' |  '--' ||  .--'| .-. ||        || .-. | ");
+    console.log("|   ,'.   ||  | |  |\\ '-'  |  |  |  .-'  `)|  | --' |  |   ' '-' '|  |  |  |' '-' ' ");
+    console.log("'--'   '--'`--' `--' `--`--'  `--'  `----' `--'     `--'    `---' `--`--`--' `---'  ");
+  });
+
+}

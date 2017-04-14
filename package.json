@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "nodemon app.js"
+    "test": "nodemon app.js",
+    "start": "nodejs app.js"
   },
   "author": "",
   "license": "ISC",
@@ -12,9 +13,12 @@
     "body-parser": "^1.17.1",
     "cookie-parser": "^1.4.3",
     "cors": "^2.8.3",
+    "dotenv": "^4.0.0",
     "express": "^4.15.2",
     "express-hbs": "^1.0.4",
+    "fs": "0.0.1-security",
     "handlebars": "^4.0.6",
+    "https": "^1.0.0",
     "isomorphic-fetch": "^2.2.1",
     "loadash": "0.0.1",
     "md5": "^2.2.1",
@@ -25,4 +29,4 @@
     "request-promise": "^4.2.0",
     "serve-favicon": "^2.4.2"
   }
-} 
+}
