@@ -1,7 +1,7 @@
 
 
-var beforePoints = -1
-    function updatePoints() {
+var beforePoints = -1;
+    function updateParticipationInfo() {
         $.ajax({
             type: "GET",
             url: '//' + window.location.host + '/api/participation/info',
@@ -11,46 +11,41 @@ var beforePoints = -1
                 promoId: promoId
             },
             success: function (data) {
-                console.info("Conexión establecida con BD");
 
                 //Actualiza la variable de puntos anterior por primera vez para tener constancia de los cambios
-                if (puntos == -1) {
-                    puntos = data.puntos;
+                if (beforePoints == -1) {
+                    beforePoints = data.beforePoints;
                 }
 
                 console.log(data);
 
+                $(".avgPoints").html(data.avgPoints);
+                $(".userPoints").html(data.userPoints);
+                $(".particNumber").html(data.particNumber);
+                $(".visualNumber").html(data.visualNumber);
+                $(".particPoints").html(data.particPoints);
+                $(".visualPoints").html(data.visualPoints);
 
-
-                $(".amigos_participando").html(data.amigos + (data.amigos == 1 ? " sólo amigo participando" : " amigos están participando"));
-                $(".visualizaciones").html(data.visualizaciones + (data.visualizaciones == 1 ? " amigo" : " amigos") + " han accedido a tu enlace");
-                $(".puntos").html(data.puntos + (data.puntos == 1 ? " punto" : " puntos") + " conseguidos");
-
-                $(".amigos_participando_num").html(data.amigos);
-                $(".visualizaciones_num").html(data.visualizaciones + (data.visualizaciones == 1 ? " amigo tuyo ha" : " amigos tuyos han")+ " participado");
-                $(".puntos_num").html(data.puntos + (data.puntos == 1 ? " punto" : " puntos"));
-
-
-                if ((data.puntos - puntos) > 0 && (data.puntos - puntos) < 5) {
-                    actualizarNotificacion(0);
-                } else if ((data.puntos - puntos) >= 5) {
-                    actualizarNotificacion(1);
+                if ((data.userPoints - beforePoints ) > 0 && (data.userPoints - beforePoints ) < 10) {
+                    notifyPoints(0, data.userPoints - beforePoints );
+                } else if ((data.userPoints - beforePoints ) >=10) {
+                    notifyPoints(1, data.userPoints - beforePoints );
                 }
 
-                puntos = data.puntos;
+                userPoints = data.userPoints;
             },
             error: function () {
-                console.error("Datos no disponibles");
+                console.error("Participation data not available");
             }
         });
     }
 
 
     //Actualización de datos de participantes cada 5 segundos =====================
-    updatePoints();
+  //  updateParticipationInfo();
     var bucleActualizacionPuntos = setInterval(function () {
-        if(promoEnded == 'false') {
-            updatePoints();
+        if(promoEnded == "false" && userParticipating == "true") {
+            updateParticipationInfo();
         } else{
             clearInterval(bucleActualizacionPuntos);
         }
@@ -99,7 +94,7 @@ function countDown() {
     clockInterval = downTimer(diffTime, display);
   } else {
     console.log("promoción ya estaba finalizada");
-    updatePromoState();
+    //window.location.reload(true); //reload promotion
   }
 }
 
@@ -129,9 +124,12 @@ function downTimer(duration, display) {
 
 /*Google Maps + StreetView*/
 function initialize() {
+  
   var coor = {
-    lat: 39.4851826,
-    lng: -0.3634006
+    //lat: 39.4851826,
+    //lng: -0.3634006
+    lat: parseFloat(promoLat),
+    lng: parseFloat(promoLng)
   };
   var map = new google.maps.Map(document.getElementById('map'), {
     center: coor,
@@ -145,7 +143,11 @@ function initialize() {
         pitch: 10
       }
     });
+    var reCenter = new google.maps.LatLng(coor);
+map.setCenter(reCenter);
   map.setStreetView(panorama);
+
+
 }
 
 /*Geolocalization button*/
@@ -180,7 +182,10 @@ function geoFindMe() {
 }
 
 
-function doParticipate(email, phone, firstName, lastName, facebookId, googleId, profileImg) {
+function doParticipate(phone,email, firstName, lastName, facebookId, googleId, profileImg) {
+var cookiePromotions = $.cookie('promotions');
+
+
 
   var form = {
     "email": email,
@@ -189,7 +194,9 @@ function doParticipate(email, phone, firstName, lastName, facebookId, googleId, 
     "lastName": lastName,
     "facebookId": facebookId,
     "googleId": googleId,
-    "profileImg": profileImg
+    "profileImg": profileImg,
+    "promoId": promoId,
+    "promo_id": promo_id,
   };
 
   $.ajax({
@@ -197,10 +204,11 @@ function doParticipate(email, phone, firstName, lastName, facebookId, googleId, 
     url: '//' + window.location.host + '/api/participate/',
     data: form,
     success: function (response) {
-      console.log(response);
+      console.log('Perticipating successfuly: '+response);
+      window.location.reload(true); //reload promotion
     },
     error: function (error) {
-      console.error(error);
+      console.error('Error when trying to participate: '+ error);
     }
   });
 
@@ -260,7 +268,7 @@ function testAPI() {
       console.log('Successful login for: ' + response.name);
       document.getElementById('status').innerHTML = 'Thanks for logging in, ' + response.name + '! Your email is: ' + response.email;
 
-      doParticipate(response.email, undefined, response.first_name, response.last_name, response.id, undefined, response.picture.data.url);
+      doParticipate(undefined,response.email, response.first_name, response.last_name, response.id, undefined, response.picture.data.url);
     }
   });
 }
@@ -384,7 +392,7 @@ function makeApiCall() {
     var profileImage = resp.result.photos[0].url;
     var id = resp.nicknames[0].metadata.source.id;
 
-    doParticipate(email, undefined, givenName, familyName, undefined, id, profileImage);
+    doParticipate(undefined, email, givenName, familyName, undefined, id, profileImage);
 
     var p = document.createElement('p');
     p.appendChild(document.createTextNode('Hello, ' + name + '! Your email is: ' + email));
@@ -441,7 +449,7 @@ $(document).ready(function () {
 
   var notificacion = null;
 
-  function actualizarNotificacion(tipo,puntos) {
+  function notifyPoints(tipo,puntos) {
 
     if (notificacion != null) {
       notificacion.close();
@@ -459,7 +467,21 @@ $(document).ready(function () {
   }
 
 
+
+
+ $('button.login-participate').click(function(){
+   var inputFormParticipate = $('.participate-input').val();
+    if(type=='phone'){
+      doParticipate(inputFormParticipate, undefined, undefined, undefined, undefined, undefined, undefined);
+    
+    }else if(type=='email'){
+      doParticipate(undefined,inputFormParticipate, undefined, undefined, undefined, undefined, undefined);
+    }
+    
+ })
+
   var state = false;
+  var type = '';
   function checkIfValidLoginEnableButton() {
     var checked = $('.accept-terms').is(':checked');
     if (state && checked) {
@@ -469,15 +491,13 @@ $(document).ready(function () {
     }
   }
 
-
   $('.accept-terms').change(function () {
     checkIfValidLoginEnableButton();
   })
 
   $('.participate-input').on('keyup change paste  ', function (e) {
 
-    var $icon = $('.verify-icon'),
-      type = '';
+    var $icon = $('.verify-icon');
 
     if ($(this).val().length > 0) {
       $('.participate-form-ext').show();
@@ -535,7 +555,7 @@ $(document).ready(function () {
 
 
 
-  actualizarNotificacion(0,5);
+  notifyPoints(0,5);
 
 
 

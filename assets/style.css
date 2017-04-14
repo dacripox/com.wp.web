@@ -135,10 +135,9 @@
 #map,
 #pano {
  /*float: left;*/
- 
  height: 202px;
- width: 100%;
- margin-bottom: 10px
+ /* width: 100%; */
+ margin-bottom: 10px;
 }
 .container-map {
  /*height: 100%;*/

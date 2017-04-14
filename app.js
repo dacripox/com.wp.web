@@ -25,24 +25,32 @@ app.set('view engine', 'hbs');
 app.set('views', __dirname + '/views');
 
 
-hbs.registerHelper("math", function(lvalue, operator, rvalue, options) {
-    lvalue = parseFloat(lvalue);
-    rvalue = parseFloat(rvalue);
-        
-    return {
-        "+": lvalue + rvalue,
-        "-": lvalue - rvalue,
-        "*": lvalue * rvalue,
-        "/": lvalue / rvalue,
-        "%": lvalue % rvalue
-    }[operator];
+hbs.registerHelper("math", function (lvalue, operator, rvalue, options) {
+  lvalue = parseFloat(lvalue);
+  rvalue = parseFloat(rvalue);
+
+  return {
+    "+": lvalue + rvalue,
+    "-": lvalue - rvalue,
+    "*": lvalue * rvalue,
+    "/": lvalue / rvalue,
+    "%": lvalue % rvalue
+  }[operator];
+});
+
+hbs.registerHelper("calculateAvgPoints", function (points, participants) {
+  return  parseInt(points / participants) || 0 ;
+});
+
+hbs.registerHelper("userIsParticipating", function (participation) {
+  return  participation ? true: false;
 });
 
 
 
 app.use('/api', apiRoutes);
-app.use('/assets',express.static(path.join(__dirname, 'assets')));
-app.use('/vendor',express.static(path.join(__dirname, 'vendor')));
+app.use('/assets', express.static(path.join(__dirname, 'assets')));
+app.use('/vendor', express.static(path.join(__dirname, 'vendor')));
 app.use('/', mainRoutes);
 
 

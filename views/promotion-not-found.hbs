@@ -76,9 +76,35 @@
  
 
 
-<h2>Promoción no encontrada: {{promoId}}</h2>
+<h2></h2>
 
-
+<div class="ui raised very padded text container segment">
+  <img class="ui centered medium image" src="https://whatspromo.com/wp/wp-content/uploads/2017/03/logo_2.png">
+ <h2 class="ui header">
+  <i class="yellow warning sign icon"></i>
+  <div class="content">
+    ¡Vaya! No hemos encontrado lo que buscas 🙈
+  </div>
+</h2>
+  <p>Parece que no hay nada en esta url. ¿Quieres probar a ver si lo encontramos?</p>
+  <form role="search" method="get" class="search-form" action="https://whatspromo.com/wp/">
+    <div class="ui icon input">
+    <input type="search" class="search-field uisearch" placeholder="Buscar …" value="" name="s">
+      <button type="submit" class="search-submit ui compact icon button"><i class="search icon"></i></button>
+  </div>
+</form>
+  <br>
+  <p>Puede ser que hayas llegado aquí porque:</p>
+  <div class="ui bulleted list">
+  <div class="item">La promoción a la que intentas acceder no está disponible.</div>
+  <div class="item">La url indicada puede que tenga algún fallo.</div>
+</div>
+  <p>Si crees que hay un error en la plataforma puedes ponerte en contacto con nosotros <a href="www.whatspromo.com/wp/contacto">aquí</a> e intentaremos solucionarlo con la mayor brevedad posible.</p>
+  <a class="ui toggle button" href="https://whatspromo.com">Volver a WhatsPromo</a>
+  <br><br><br><br>
+  <div class="site-info">
+  <span class="site-title">© WhatsPromo 2017 ·</span> <a href="https://whatspromo.com/wp/terminos-y-condiciones/">Términos y Condiciones ·</a><a href="https://whatspromo.com/wp/politica-de-privacidad/"> Política de Privacidad</a></div>
+  </div>
 
 <!--Footer-->
 {{>footer}}
