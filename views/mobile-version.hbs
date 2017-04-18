@@ -146,7 +146,8 @@
   <!-- Menu handler icon (mobile)-->
             <div class="ui vertical segment web-title-container">
                   <div class="toc item">
-                        <img class="ui fluid image logo" src="../assets/img/logo_1.png" alt="">
+                      {{!--Show own logo only if free promotion (=0) --}}
+                      {{#unless promotion.promoType}}  <img class="ui fluid image logo" src="../assets/img/logo_1.png" alt=""> {{/unless}}
                         <i class="right-icon large sidebar icon"></i>
                   </div>
 
@@ -186,8 +187,11 @@
             {{>footer}}
             <!--end footer-->
 
+
             <!--Sticky menu (bottom)-->
+            {{#unless promotion.promoEnded}}
             {{>sticky-menu}}
+            {{/unless}}
             <!--end Sticky menu (bottom)-->
 
 

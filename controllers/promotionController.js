@@ -152,6 +152,18 @@ let existsUser = async (user) => {
     }
 };
 
+let getWinners = async (promo_id) => {
+    console.log('Finding winners for promotion: '+ promo_id);
+    let formData = {};
+    try {
+        let response = await request.get({ url: 'http://localhost:3000/winner/promotion/' + promo_id, form: formData });
+        return response;
+    } catch (error) {
+        console.log('REQ. ERROR: When find winners for promotion: ' + error);
+    }
+};
+
+
 let checkRefFriend = async (refFriend) => {
     console.log('Checking if redFriend already exists, before increment points');
     let formData = {};
@@ -205,7 +217,7 @@ module.exports = {
             } else {
                 console.log('show promotion on desktop');
                 //Desktop promotion
-                res.render('mobile-version', { title: promotion.promoTitle, promotion: promotion, participation: participation, user: user, winners: winners/*[{ name: 'Maria', points: 777, profileImg: 'http://semantic-ui.com/images/avatar2/small/molly.png' }] */});
+                res.render('mobile-version', { title: promotion.promoTitle, promotion: promotion, participation: participation, user: user, winners: winners/*[{ name: 'Maria', points: 777, profileImg: 'http://semantic-ui.com/images/avatar2/small/molly.png' }] */ });
             }
         }
 
@@ -217,14 +229,17 @@ module.exports = {
             res.render('promotion-not-found', { title: 'Promoción no encontrada. ' });
         } else {
             if (!promotion.promoEnded) {
-               
+
                 console.log('Promotion end on: ' + promotion.endDate);
                 if (new Date(promotion.endDate) < new Date()) {
                     console.log('Ending promotion now. Making raffle.');
                     //Make the raffle and check as ended 
-                    makeRaffleAndEnd(promoId);
-                    //Refresh page 
-                    res.redirect(req.get('referer'));
+                    let promoEndedOk = await makeRaffleAndEnd(promoId);
+                    if (promoEndedOk) {
+                        //Refresh page 
+                        console.log('Refreshing page after promotion end.');
+                        res.redirect(req.get('referer'));
+                    }
                 } else {
                     console.log('Promotion not ended');
                     var userId = req.cookies.userId;
@@ -395,7 +410,7 @@ module.exports = {
                 if (userId == undefined) {
                     console.log('show promotion ended, user not defined, promotion already ended');
                     //Show promotion (ended)
-                    let winners = getWinners(promoId);
+                    let winners = await getWinners(promoId);
                     showPromotion(promotion, undefined, undefined, winners, requestType);
 
                 } else {
@@ -409,8 +424,14 @@ module.exports = {
                         let participation = await getParticipation(userId, promoId);
                         //Show promotion (with user details)
                         console.log('user is: ' + user);
-                        let winners = getWinners(promoId);
+                        let winners = await getWinners(promoId);
                         showPromotion(promotion, user, undefined, winners, requestType);
+                    } else {
+                        console.log('show promotion ended, user not defined, promotion already ended');
+                        //Show promotion (ended)
+                        let winners = await getWinners(promoId);
+                        showPromotion(promotion, undefined, undefined, winners, requestType);
+
                     }
                 }
             }
