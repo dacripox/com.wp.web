@@ -483,7 +483,7 @@ $(document).ready(function () {
 
 var notif10 = null;
  if (getQueryVariable(4)) {
-   notif10 = notificarPuntos(tipo,puntos);
+   notif10 = notificarPuntos(10);
 } 
 
 
