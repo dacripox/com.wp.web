@@ -393,7 +393,7 @@ function makeApiCall() {
     var familyName = resp.result.names[0].familyName;
     var email = resp.result.emailAddresses[0].value;
     var profileImage = resp.result.photos[0].url;
-    var id = resp.nicknames[0].metadata.source.id;
+    var id = resp.metadata.sources[0].id;
 
     doParticipate(undefined, email, givenName, familyName, undefined, id, profileImage);
 
