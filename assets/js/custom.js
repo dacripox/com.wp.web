@@ -343,7 +343,7 @@ function handleClientLoad() {
   // Load the API client and auth2 library
   gapi.load('client:auth2', initClient);
 }
-
+var isSignedInGoogle = false;
 function initClient() {
   gapi.client.init({
     apiKey: apiKey,
@@ -355,7 +355,7 @@ function initClient() {
     gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
     // Handle the initial sign-in state.
    /////// updateSigninStatus();
-   gapi.auth2.getAuthInstance().isSignedIn.get();
+   isSignedInGoogle = gapi.auth2.getAuthInstance().isSignedIn.get();
     updateSigninStatus(false);
     authorizeButton.onclick = handleAuthClick;
     // signoutButton.onclick = handleSignoutClick;
@@ -368,14 +368,14 @@ function updateSigninStatus(isSignedIn) {
     // signoutButton.style.display = 'block';
     makeApiCall(); 
   } else {
-    authorizeButton.style.display = 'block';
+   // authorizeButton.style.display = 'block';
     // signoutButton.style.display = 'none';
   }
 }
 
 function handleAuthClick(event) {
   console.log("login handle" + event);
-  if(!gapi.auth2.getAuthInstance().isSignedIn.get()){
+  if(isSignedInGoogle){
       gapi.auth2.getAuthInstance().signIn();
   }else{
     makeApiCall();
