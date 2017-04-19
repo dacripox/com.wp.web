@@ -364,7 +364,7 @@ function updateSigninStatus(isSignedIn) {
   if (isSignedIn) {
     // authorizeButton.style.display = 'none';
     // signoutButton.style.display = 'block';
-    makeApiCall(); //NOT PARTIPATE BY DEFAULT
+    makeApiCall(); 
   } else {
     authorizeButton.style.display = 'block';
     // signoutButton.style.display = 'none';
@@ -374,6 +374,8 @@ function updateSigninStatus(isSignedIn) {
 function handleAuthClick(event) {
   console.log("login handle" + event);
   gapi.auth2.getAuthInstance().signIn();
+
+  updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
 }
 
 //function handleSignoutClick(event) {
