@@ -495,7 +495,8 @@ module.exports = {
         console.log('current user for user cookie (req.cookies.userId) is' + currentUser);
         if (_.isEmpty(currentUser)) {
             console.log('user not already participating')
-            let currentUser = await newUser(user);
+            let currentUserNoJSON = await newUser(user);
+            let currentUser = JSON.parse(currentUserNoJSON);
         }
 
         let participation = {};
