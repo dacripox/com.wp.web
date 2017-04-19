@@ -7,9 +7,12 @@
   "theme_color": "#ff6060",
   "background_color": "#ff6060",
   "display": "standalone",
+   "gcm_sender_id": "482941778795",
+  "DO_NOT_CHANGE_GCM_SENDER_ID": "Do not change the GCM Sender ID",
+ 
   "icons": [
     {
-      "src": "asssets/favicons/android-chrome-192x192.png",
+      "src": "assets/favicons/android-chrome-192x192.png",
       "sizes": "192x192",
       "type": "image/png"
     },

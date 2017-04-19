@@ -52,10 +52,18 @@ hbs.registerHelper("userIsParticipating", function (participation) {
 
 
 
+app.use('/manifest.json', express.static(path.join(__dirname, 'manifest.json')));
+app.use('/OneSignalSDKUpdaterWorker.js', express.static(path.join(__dirname, 'OneSignalSDKUpdaterWorker.js')));
+app.use('/OneSignalSDKWorker.js', express.static(path.join(__dirname, 'OneSignalSDKWorker.js')));
+
+
 app.use('/api', apiRoutes);
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 app.use('/vendor', express.static(path.join(__dirname, 'vendor')));
 app.use('/', mainRoutes);
+
+
+
 
 
 
