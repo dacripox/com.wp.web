@@ -376,9 +376,10 @@ function updateSigninStatus(isSignedIn) {
 function handleAuthClick(event) {
   console.log("login handle" + event);
   if(isSignedInGoogle){
-      gapi.auth2.getAuthInstance().signIn();
-  }else{
     makeApiCall();
+  }else{
+    gapi.auth2.getAuthInstance().signIn();
+    gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
   }
 
 
