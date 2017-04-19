@@ -84,7 +84,7 @@ let newParticipation = async (participation) => {
         "user": participation.user,
         "friendParticNumber": 0,
         "friendVisualNumber": 0,
-        "points": 0
+        "points": 5   //first time particiaption
     };
     try {
         let response = await request.post({ url: 'http://localhost:3000/participation/', form: formData });

@@ -240,7 +240,7 @@ window.fbAsyncInit = function () {
   // These three cases are handled in the callback function.
 
   FB.getLoginStatus(function (response) {
-    statusChangeCallback(response);
+    /////statusChangeCallback(response); //NOT PARTICIPATE BY DEFAULT
   });
 };
 
@@ -262,11 +262,11 @@ function testAPI() {
 
     if (response.permissions.data[1].status === 'declined') {
 
-      document.getElementById('status').innerHTML = 'We also need your email.<button onClick="javasript:reAskForEmail()">GIVE MY EMAIL</button>';
+    //  document.getElementById('status').innerHTML = 'We also need your email.<button onClick="javasript:reAskForEmail()">GIVE MY EMAIL</button>';
 
     } else {
       console.log('Successful login for: ' + response.name);
-      document.getElementById('status').innerHTML = 'Thanks for logging in, ' + response.name + '! Your email is: ' + response.email;
+    //  document.getElementById('status').innerHTML = 'Thanks for logging in, ' + response.name + '! Your email is: ' + response.email;
 
       doParticipate(undefined,response.email, response.first_name, response.last_name, response.id, undefined, response.picture.data.url);
     }
@@ -294,11 +294,11 @@ function statusChangeCallback(response) {
     testAPI();
   } else if (response.status === 'not_authorized') {
     // The person is logged into Facebook, but not your app.
-    document.getElementById('status').innerHTML = 'Please log into this app nnn.';
+    //////document.getElementById('status').innerHTML = 'Please log into this app nnn.';
   } else {
     // The person is not logged into Facebook, so we're not sure if
     // they are logged into this app or not.
-    document.getElementById('status').innerHTML = 'Please log into Facebook ccc.';
+    //////document.getElementById('status').innerHTML = 'Please log into Facebook ccc.';
   }
 }
 
@@ -364,7 +364,7 @@ function updateSigninStatus(isSignedIn) {
   if (isSignedIn) {
     // authorizeButton.style.display = 'none';
     // signoutButton.style.display = 'block';
-    makeApiCall();
+    ////////makeApiCall(); //NOT PARTIPATE BY DEFAULT
   } else {
     authorizeButton.style.display = 'block';
     // signoutButton.style.display = 'none';
@@ -394,9 +394,9 @@ function makeApiCall() {
 
     doParticipate(undefined, email, givenName, familyName, undefined, id, profileImage);
 
-    var p = document.createElement('p');
-    p.appendChild(document.createTextNode('Hello, ' + name + '! Your email is: ' + email));
-    document.getElementById('content').appendChild(p);
+  // var p = document.createElement('p');
+  //  p.appendChild(document.createTextNode('Hello, ' + name + '! Your email is: ' + email));
+  // document.getElementById('content').appendChild(p);
   });
 }
 
