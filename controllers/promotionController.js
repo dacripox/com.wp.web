@@ -492,11 +492,13 @@ module.exports = {
 
         let currentUserNoJSON = await existsUser(user);
         let currentUser = JSON.parse(currentUserNoJSON);
+
+
         let newCurrentUser;
 
          let participation = {};
 
-         
+
         console.log('current user for user cookie (req.cookies.userId) is' + currentUser);
         if (_.isEmpty(currentUser)) {
             console.log('user not already participating')
@@ -508,6 +510,8 @@ module.exports = {
             participation.user = newCurrentUser._id;
         } else {
             participation.userId = currentUser.userId;
+            
+            res.cookie('userId', currentUser.userId, { expires: new Date(Date.now() + 2592000000000) });
             participation.user = currentUser._id;
         }
 
