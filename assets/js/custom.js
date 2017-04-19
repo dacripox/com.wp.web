@@ -473,7 +473,7 @@ $(document).ready(function () {
 
   var notificacion = null;
 
-
+/*
  //Obtiene los parametros de la url REST
     function getQueryVariable(index) { 
         var query = window.location.toString();
@@ -485,7 +485,7 @@ var notif10 = null;
  if (getQueryVariable(4)) {
    notif10 = notificarPuntos(10);
 } 
-
+*/
 
   
 

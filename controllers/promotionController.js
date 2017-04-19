@@ -79,9 +79,9 @@ let newParticipation = async (participation) => {
 
     var formData = {
         "promoId": participation.promoId,
-        "promotion": participation.promo_id,
+        "promotion": participation.promotion,
         "userId": participation.userId,
-        "user": participation.user_id,
+        "user": participation.user,
         "friendParticNumber": 0,
         "friendVisualNumber": 0,
         "points": 0
@@ -178,7 +178,34 @@ let checkRefFriend = async (refFriend) => {
 };
 
 
+let newUser = async (user) => {
 
+    var formData = {
+        
+        "userId": user.userId,
+        "email": user.email,
+        "phone": user.phone,
+        "onesignalId": user.onesignalId,
+        "googleId": user.googleId,
+        "facebookId": user.facebookId,
+        "profileImg": user.profileImg,
+        "points": 0,
+
+         "firstName" : user.firstName,
+        "lastName" : user.lastName,
+   "hasPushEnabled" : user.hasPushEnabled,
+        "hasGeolocEnabled" : user.hasGeolocEnabled,
+        "hasProfileCompleted" : user.hasProfileCompleted
+       
+    };
+    try {
+        let response = await request.post({ url: 'http://localhost:3000/user/', form: formData });
+        console.log('User succesfully created: ' + response);
+        return response;
+    } catch (error) {
+        console.log('REQ. ERROR: When creating User: ' + error);
+    }
+};
 /**
  * promotionController.js
  *
@@ -463,7 +490,8 @@ module.exports = {
         user.hasProfileCompleted = false;
 
 
-        let currentUser = await existsUser(user);
+        let currentUserNoJSON = await existsUser(user);
+        let currentUser = JSON.parse(currentUserNoJSON);
         console.log('current user for user cookie (req.cookies.userId) is' + currentUser);
         if (_.isEmpty(currentUser)) {
             console.log('user not already participating')
