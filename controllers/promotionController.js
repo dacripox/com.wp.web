@@ -153,7 +153,7 @@ let existsUser = async (user) => {
 };
 
 let getWinners = async (promo_id) => {
-    console.log('Finding winners for promotion: '+ promo_id);
+    console.log('Finding winners for promotion: ' + promo_id);
     let formData = {};
     try {
         let response = await request.get({ url: 'http://localhost:3000/winner/promotion/' + promo_id, form: formData });
@@ -181,7 +181,7 @@ let checkRefFriend = async (refFriend) => {
 let newUser = async (user) => {
 
     var formData = {
-        
+
         "userId": user.userId,
         "email": user.email,
         "phone": user.phone,
@@ -191,12 +191,12 @@ let newUser = async (user) => {
         "profileImg": user.profileImg,
         "points": 0,
 
-         "firstName" : user.firstName,
-        "lastName" : user.lastName,
-   "hasPushEnabled" : user.hasPushEnabled,
-        "hasGeolocEnabled" : user.hasGeolocEnabled,
-        "hasProfileCompleted" : user.hasProfileCompleted
-       
+        "firstName": user.firstName,
+        "lastName": user.lastName,
+        "hasPushEnabled": user.hasPushEnabled,
+        "hasGeolocEnabled": user.hasGeolocEnabled,
+        "hasProfileCompleted": user.hasProfileCompleted
+
     };
     try {
         let response = await request.post({ url: 'http://localhost:3000/user/', form: formData });
@@ -497,7 +497,14 @@ module.exports = {
         if (_.isEmpty(currentUser)) {
             console.log('user not already participating')
             let currentUserNoJSON = await newUser(user);
-           newCurrentUser = JSON.parse(currentUserNoJSON);
+            newCurrentUser = JSON.parse(currentUserNoJSON);
+
+
+            participation.userId = newCurrentUser.userId;
+            participation.user = newCurrentUser._id;
+        } else {
+            participation.userId = currentUser.userId;
+            participation.user = currentUser._id;
         }
 
         let participation = {};
@@ -505,8 +512,7 @@ module.exports = {
         participation.promoId = req.body.promoId;
         participation.promotion = req.body.promo_id;
 
-        participation.userId = newCurrentUser.userId;
-        participation.user = newCurrentUser._id;
+
 
 
         let nowParticipating = await newParticipation(participation);
