@@ -354,7 +354,7 @@ function initClient() {
     // Listen for sign-in state changes.
     gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
     // Handle the initial sign-in state.
-    updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
+   //****////***/// updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
     authorizeButton.onclick = handleAuthClick;
     // signoutButton.onclick = handleSignoutClick;
   });
@@ -393,7 +393,7 @@ function makeApiCall() {
     var familyName = resp.result.names[0].familyName;
     var email = resp.result.emailAddresses[0].value;
     var profileImage = resp.result.photos[0].url;
-    var id = resp.metadata.sources[0].id;
+    var id = resp.result.metadata.sources[0].id;
 
     doParticipate(undefined, email, givenName, familyName, undefined, id, profileImage);
 
