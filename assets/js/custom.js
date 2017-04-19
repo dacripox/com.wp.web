@@ -409,35 +409,59 @@ $(document).ready(function () {
   //Funcion para notificar la obtencion de nuevos puntos
   function notificarPuntos(tipo, puntos) {
 
-    var textoMensaje, tipoAlerta, puntos;
+    var textoMensaje, tipoAlerta, puntos, plantillaEspecial,tiempoEspera;
     switch (tipo) {
       case 0:
+      tiempoEspera = 10000;
         textoMensaje = 'Nuevo amigo visitando tu enlace. Anímalos a participar.';
         tipoAlerta = 'success';
-       // puntos = 1;
+       plantillaEspecial = '<br> <p class="text-center" style="font-size: large"></p> <p class="text-center" style="font-size: x-large;"><strong>+ ' + puntos + textoPuntos + '  </strong></p><span class="text-center center-block "><small>  Hemos añadido los puntos a tu perfil.</small></span>';
         navigator.vibrate([100, 0, 90]);
         break;
       case 1:
+      tiempoEspera = 10000;
         textoMensaje = 'Nuevo amigo participando. Sigue compartiendo.';
         tipoAlerta = 'warning';
-       // puntos = 10;
+       plantillaEspecial = '<br> <p class="text-center" style="font-size: large"></p> <p class="text-center" style="font-size: x-large;"><strong>+ ' + puntos + textoPuntos + '  </strong></p><span class="text-center center-block "><small>  Hemos añadido los puntos a tu perfil.</small></span>';
         navigator.vibrate([120, 0, 100]);
         break;
       case 3:
+      tiempoEspera = 10000;
         textoMensaje = 'Te regalamos unos puntos para empezar. Invita a tus amigos para tener más posibilidades de ganar.';
         tipoAlerta = 'warning';
-        //puntos = 5;
+        plantillaEspecial = '<br> <p class="text-center" style="font-size: large"></p> <p class="text-center" style="font-size: x-large;"><strong>+ ' + puntos + textoPuntos + '  </strong></p><span class="text-center center-block "><small>  Hemos añadido los puntos a tu perfil.</small></span>';
+        navigator.vibrate([120, 0, 100]);
+        break;
+      case 10:
+      tiempoEspera = 7000;
+        textoMensaje = 'Acabas de recibir una invitación para participar en la promoción.';
+        tipoAlerta = 'warning';
+        plantillaEspecial: '...';
+        navigator.vibrate([120, 0, 100]);
+        break;
+      case 11:
+      tiempoEspera = 7000;
+        textoMensaje = 'Participa y comparte la promoción con tus amigos.';
+        tipoAlerta = 'warning';
+        plantillaEspecial: '...';
+        navigator.vibrate([120, 0, 100]);
+        break;
+      case 12:
+      tiempoEspera = 7000;
+        textoMensaje = 'Por cada amigo que visite tu enlace consigues 1 punto, y si participa 10.';
+        tipoAlerta = 'warning';
+        plantillaEspecial: '...';
         navigator.vibrate([120, 0, 100]);
         break;
     }
     var textoPuntos = (puntos == 1) ? ' punto' : ' puntos';
     return $.notify({
-      icon: 'fa fa-user-plus',
+      icon: 'fa fa-user-plus', 
       title: textoMensaje,
-      message: '<br> <p class="text-center" style="font-size: large"></p> <p class="text-center" style="font-size: x-large;"><strong>+ ' + puntos + textoPuntos + '  </strong></p><span class="text-center center-block "><small>  Hemos añadido los puntos a tu perfil.</small></span>'
+      message: plantillaEspecial
     }, {
         type: tipoAlerta,
-        delay: 100000,
+        delay: tiempoEspera,
         animate: {
           enter: 'animated flipInY',
           exit: 'animated flipOutX'
@@ -448,6 +472,24 @@ $(document).ready(function () {
   }
 
   var notificacion = null;
+
+
+ //Obtiene los parametros de la url REST
+    function getQueryVariable(index) { 
+        var query = window.location.toString();
+        var parts = query.split("/");
+        return parts[index];
+    }
+
+var notif10 = null;
+ if (getQueryVariable(4)) {
+   notif10 = notificarPuntos(tipo,puntos);
+} 
+
+
+  
+
+
 
   function notifyPoints(tipo,puntos) {
 
@@ -554,8 +596,6 @@ $(document).ready(function () {
   });
 
 
-
-  notifyPoints(0,5);
 
 
 

@@ -465,7 +465,7 @@ module.exports = {
 
         let currentUser = await existsUser(user);
         console.log('current user for user cookie (req.cookies.userId) is' + currentUser);
-        if (_.isEmpty(user)) {
+        if (_.isEmpty(currentUser)) {
             console.log('user not already participating')
             let currentUser = await newUser(user);
         }
