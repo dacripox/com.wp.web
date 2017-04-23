@@ -62,7 +62,7 @@
                   <script>
                     fbq('track', 'CompleteRegistration');
 
-                    OneSignal.push(["sendTags", {promoId: {{promotion.promoId}}, userId: {{user.userId}}]);
+                    OneSignal.push(["sendTags", {promoId: "{{{promotion.promoId}}}", userId: "{{{user.userId}}}"]);
                   </script>
        {{/if}}
             </div>

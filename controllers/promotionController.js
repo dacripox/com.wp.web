@@ -84,7 +84,7 @@ let newParticipation = async (participation) => {
         "user": participation.user,
         "friendParticNumber": 0,
         "friendVisualNumber": 0,
-        "points": 5   //first time particiaption
+        "points": 0   //first time particiaption
     };
     try {
         let response = await request.post({ url: 'http://localhost:3000/participation/', form: formData });
@@ -129,6 +129,18 @@ let incrementParticipation = async (userId, promoId) => {
     }
 };
 
+let incrementParticipationGlobal = async (promoId) => {
+    console.log('incrementing participation for promotion: promoId:' + promoId);
+    let formData = {};
+    try {
+        let response = await request.post({ url: 'http://localhost:3000/participation/increment-participation/promotion/' + promoId, form: formData });
+        return response;
+    } catch (error) {
+        console.log('REQ. ERROR: When incrementing participation GLOBAL: ' + error);
+    }
+};
+
+
 let makeRaffleAndEnd = async (promoId) => {
     console.log('Making raffle request for promotion: ' + promoId);
     let formData = {};
@@ -145,7 +157,7 @@ let existsUser = async (user) => {
     console.log('Checking if user already exists, before participating');
     let formData = {};
     try {
-        let response = await request.get({ url: 'http://localhost:3000/user/exist/email/' + user.email + '/phone/' + user.phone, form: formData });
+        let response = await request.get({ url: 'http://localhost:3000/user/exist/id/'+user.userId+'/email/' + user.email + '/phone/' + user.phone, form: formData });
         return response;
     } catch (error) {
         console.log('REQ. ERROR: When checking if user exists: ' + error);
@@ -157,7 +169,7 @@ let getWinners = async (promo_id) => {
     let formData = {};
     try {
         let response = await request.get({ url: 'http://localhost:3000/winner/promotion/' + promo_id, form: formData });
-        return response;
+        return JSON.parse(response);
     } catch (error) {
         console.log('REQ. ERROR: When find winners for promotion: ' + error);
     }
@@ -165,7 +177,7 @@ let getWinners = async (promo_id) => {
 
 
 let checkRefFriend = async (refFriend) => {
-    console.log('Checking if redFriend already exists, before increment points');
+    console.log('Checking if refFriend already exists, before increment points');
     let formData = {};
     try {
         let response = await request.get({ url: 'http://localhost:3000/user/id/' + refFriend, form: formData })
@@ -240,11 +252,10 @@ module.exports = {
             if (requestType == 'mobile') {
                 console.log('show promotion on mobile');
                 //Mobile promotion
-                res.render('mobile-version', { title: promotion.promoTitle, promotion: promotion, participation: participation, user: user, winners: [{ name: 'Maria', points: 777, profileImg: 'http://semantic-ui.com/images/avatar2/small/molly.png' }] });
+                res.render('mobile-version', { title: promotion.promoTitle, promotion: promotion, participation: participation, user: user, winners: winners });
             } else {
-                console.log('show promotion on desktop');
-                //Desktop promotion
-                res.render('mobile-version', { title: promotion.promoTitle, promotion: promotion, participation: participation, user: user, winners: winners/*[{ name: 'Maria', points: 777, profileImg: 'http://semantic-ui.com/images/avatar2/small/molly.png' }] */ });
+                console.log('show promotion on desktop');                //Desktop promotion
+                res.render('mobile-version', { title: promotion.promoTitle, promotion: promotion, participation: participation, user: user, winners: winners/*[{ name: 'Maria', points: 777, profileImg: 'http://semantic-ui.com/images/avatar2/small/molly.png' },{ name: 'Maria', points: 777 },{ name: 'Maria', points: 777, profileImg: 'http://semantic-ui.com/images/avatar2/small/molly.png' },{ name: 'Maria', points: 777}] */ });
             }
         }
 
@@ -308,14 +319,16 @@ module.exports = {
                         //If has refFriend, increment points and add refFriend to cookie promotion
                         //let alreadyRefered = false;
                         if (refFriend) {
-                            let cookiePromotions = req.cookies.promotions;
+                            if (req.cookies.promotions) { let cookiePromotions = req.cookies.promotions; }
                             new Promise((resolve, reject) => {
-                                cookiePromotions.forEach((promotion) => {
-                                    if (promotion.refFriendId) {
-                                        console.log('Already refered: ' + true);
-                                        resolve(true);
-                                    }
-                                });
+                                if (cookiePromotions) {
+                                    cookiePromotions.forEach((promotion) => {
+                                        if (promotion.refFriendId) {
+                                            console.log('Already refered: ' + true);
+                                            resolve(true);
+                                        }
+                                    });
+                                }
                                 resolve(false);
                             }).then(async (alreadyRefered) => {
 
@@ -332,7 +345,7 @@ module.exports = {
                                         await incrementVisualization(refFriend, promoId);
 
                                         //Crate promotioN cookie in promotionS cookie (with refFriend --add to cookie)
-                                        let cookiePromotions = req.cookies.promotions;
+                                        if (req.cookies.promotions) { let cookiePromotions = req.cookies.promotions; }
                                         let p = new Promise((resolve, reject) => {
                                             cookiePromotions.forEach((promotion) => {
                                                 console.log(promotion);
@@ -369,65 +382,77 @@ module.exports = {
                                                     res.cookie('promotions', newCookiePromotions, { expires: new Date(Date.now() + 2592000000000) });
 
                                                     //continue
+                                                    renderPromotion();
                                                 }).catch((err) => {
                                                     console.log(err);
                                                 });
 
+                                            } else {
+                                                //continue
+                                                renderPromotion();
                                             }
                                         }).catch((errr) => {
                                             console.log(errr);
                                         });
 
                                     } // end if not already have added points
-
+                                    else {
+                                        //continue
+                                        renderPromotion();
+                                    }
+                                } else {
+                                    //continue
+                                    renderPromotion();
                                 }
-                            } //end if
+                            }
                                 ////////////////////////////////////////////////////
-
                                 ).catch((errr) => {
                                     console.log(errr);
                                 });
                         } else {
-
+                            //continue
+                            renderPromotion();
                         }
                     });
                 } //end if-else promotion (make raffle / not make raffle)
 
 
+                renderPromotion = async() => {
 
-                setTimeout(async () => {
-                    //If user not set in Cookie, create one user and set to cookie
-                    if (userId == undefined) {
-                        console.log('creating user id');
-                        let userId = userController.createUserId();
-                        res.cookie('userId', userId, { expires: new Date(Date.now() + 2592000000000) });
+                   // setTimeout(async () => {
+                        //If user not set in Cookie, create one user and set to cookie
+                        if (userId == undefined) {
+                            console.log('creating user id');
+                            let userId = userController.createUserId();
+                            res.cookie('userId', userId, { expires: new Date(Date.now() + 2592000000000) });
 
-                        //Show promotion (new user)
-                        showPromotion(promotion, undefined, undefined, undefined, requestType);
-
-                    } else {
-                        console.log('User already created');
-                        //If user already set in cookie, check if participating
-                        let alreadyParticipating = await isParticipating(userId, promoId);
-
-                        if (alreadyParticipating == true) {
-                            console.log('user already participating');
-                            let user = await getUser(userId);
-                            let participation = await getParticipation(userId, promoId);
-                            //Show promotion (with user details)
-                            console.log('user is: ' + user);
-                            res.cookie('userId', user.userId, { expires: new Date(Date.now() + 2592000000000) });
-                            showPromotion(promotion, user, participation, undefined, requestType);
-                        }
-                        else {
-                            console.log('user not participating ');
                             //Show promotion (new user)
                             showPromotion(promotion, undefined, undefined, undefined, requestType);
-                        } //end if-else user already participating
-                    }// end if-else (creat new user / get existing user)
+
+                        } else {
+                            console.log('User already created');
+                            //If user already set in cookie, check if participating
+                            let alreadyParticipating = await isParticipating(userId, promoId);
+
+                            if (alreadyParticipating == true) {
+                                console.log('user already participating');
+                                let user = await getUser(userId);
+                                let participation = await getParticipation(userId, promoId);
+                                //Show promotion (with user details)
+                                console.log('user is: ' + user);
+                                res.cookie('userId', user.userId, { expires: new Date(Date.now() + 2592000000000) });
+                                showPromotion(promotion, user, participation, undefined, requestType);
+                            }
+                            else {
+                                console.log('user not participating ');
+                                //Show promotion (new user)
+                                showPromotion(promotion, undefined, undefined, undefined, requestType);
+                            } //end if-else user already participating
+                        }// end if-else (creat new user / get existing user)
 
 
-                }, 2000);
+                   // }, 4000);
+                }
 
 
             } else {
@@ -477,27 +502,19 @@ module.exports = {
         user.lastName = req.body.lastName;
         user.email = req.body.email;
         user.phone = req.body.phone;
-        //	user.password = req.body.firstName;
-
         user.onesignalId = req.cookies.onesignalId;
         user.googleId = req.body.googleId;
         user.facebookId = req.body.facebookId;
         user.profileImg = req.body.profileImg;
-
-        //	user.postCode = req.body.firstName;
         user.hasPushEnabled = false;
         user.hasGeolocEnabled = false;
         user.hasProfileCompleted = false;
 
-
         let currentUserNoJSON = await existsUser(user);
         let currentUser = JSON.parse(currentUserNoJSON);
 
-
         let newCurrentUser;
-
-         let participation = {};
-
+        let participation = {};
 
         console.log('current user for user cookie (req.cookies.userId) is' + currentUser);
         if (_.isEmpty(currentUser)) {
@@ -505,26 +522,27 @@ module.exports = {
             let currentUserNoJSON = await newUser(user);
             newCurrentUser = JSON.parse(currentUserNoJSON);
 
-
             participation.userId = newCurrentUser.userId;
             participation.user = newCurrentUser._id;
         } else {
             participation.userId = currentUser.userId;
-            
+
             res.cookie('userId', currentUser.userId, { expires: new Date(Date.now() + 2592000000000) });
             participation.user = currentUser._id;
         }
 
-       
-
         participation.promoId = req.body.promoId;
         participation.promotion = req.body.promo_id;
 
-
-
-
         let nowParticipating = await newParticipation(participation);
         if (nowParticipating) {
+            await incrementParticipationGlobal(req.body.promoId);
+            await incrementPoints(req.cookies.userId, req.body.promoId, 5);
+            if (req.body.refFriend && req.body.refFriend !== "") {
+
+                await incrementParticipation(req.body.refFriend, req.body.promoId);
+                await incrementPoints(req.body.refFriend, req.body.promoId, 10);
+            }
             return res.json({ participating: true });
         } else {
             return res.status(404).json({ message: false });
@@ -549,7 +567,7 @@ module.exports = {
         let participation = await getParticipation(userId, promoId);
         let promotion = await getPromotion(promoId);
 
-        console.log('Retriving participation info. for user: ' + userId + ' (promotion: ' + promoId + ')');
+        console.log('Retrieving participation info. for user: ' + userId + ' (promotion: ' + promoId + ')');
         let partInfo = {
             avgPoints: parseInt(promotion.totalPoints / promotion.participNumber) || 0,
             userPoints: participation.points,

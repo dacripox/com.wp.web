@@ -1,55 +1,55 @@
 
 
 var beforePoints = -1;
-    function updateParticipationInfo() {
-        $.ajax({
-            type: "GET",
-            url: '//' + window.location.host + '/api/participation/info',
-            dataType: "json",
-            data: {
-                userId: $.cookie("userId"),
-                promoId: promoId
-            },
-            success: function (data) {
+function updateParticipationInfo() {
+  $.ajax({
+    type: "GET",
+    url: '//' + window.location.host + '/api/participation/info',
+    dataType: "json",
+    data: {
+      userId: $.cookie("userId"),
+      promoId: promoId
+    },
+    success: function (data) {
 
-                //Actualiza la variable de puntos anterior por primera vez para tener constancia de los cambios
-                if (beforePoints == -1) {
-                    beforePoints = data.beforePoints;
-                }
+      //Actualiza la variable de puntos anterior por primera vez para tener constancia de los cambios
+      if (beforePoints == -1) {
+        beforePoints = data.beforePoints;
+      }
 
-                console.log(data);
+      console.log(data);
 
-                $(".avgPoints").html(data.avgPoints);
-                $(".userPoints").html(data.userPoints);
-                $(".particNumber").html(data.particNumber);
-                $(".visualNumber").html(data.visualNumber);
-                $(".particPoints").html(data.particPoints);
-                $(".visualPoints").html(data.visualPoints);
+      $(".avgPoints").html(data.avgPoints);
+      $(".userPoints").html(data.userPoints);
+      $(".particNumber").html(data.particNumber);
+      $(".visualNumber").html(data.visualNumber);
+      $(".particPoints").html(data.particPoints);
+      $(".visualPoints").html(data.visualPoints);
 
-                if ((data.userPoints - beforePoints ) > 0 && (data.userPoints - beforePoints ) < 10) {
-                    notifyPoints(0, data.userPoints - beforePoints );
-                } else if ((data.userPoints - beforePoints ) >=10) {
-                    notifyPoints(1, data.userPoints - beforePoints );
-                }
+      if ((data.userPoints - beforePoints) > 0 && (data.userPoints - beforePoints) < 10) {
+        notifyPoints(0, data.userPoints - beforePoints);
+      } else if ((data.userPoints - beforePoints) >= 10) {
+        notifyPoints(1, data.userPoints - beforePoints);
+      }
 
-                userPoints = data.userPoints;
-            },
-            error: function () {
-                console.error("Participation data not available");
-            }
-        });
+      userPoints = data.userPoints;
+    },
+    error: function () {
+      console.error("Participation data not available");
     }
+  });
+}
 
 
-    //Actualización de datos de participantes cada 5 segundos =====================
-  //  updateParticipationInfo();
-    var bucleActualizacionPuntos = setInterval(function () {
-        if(promoEnded == "false" && userParticipating == "true") {
-            updateParticipationInfo();
-        } else{
-            clearInterval(bucleActualizacionPuntos);
-        }
-    }, 10000);
+//Actualización de datos de participantes cada 5 segundos =====================
+//  updateParticipationInfo();
+var bucleActualizacionPuntos = setInterval(function () {
+  if (promoEnded == "false" && userParticipating == "true") {
+    updateParticipationInfo();
+  } else {
+    clearInterval(bucleActualizacionPuntos);
+  }
+}, 10000);
 
 
 /*Fixed menu open-close*/
@@ -124,7 +124,7 @@ function downTimer(duration, display) {
 
 /*Google Maps + StreetView*/
 function initialize() {
-  
+
   var coor = {
     //lat: 39.4851826,
     //lng: -0.3634006
@@ -143,8 +143,8 @@ function initialize() {
         pitch: 10
       }
     });
-    var reCenter = new google.maps.LatLng(coor);
-map.setCenter(reCenter);
+  var reCenter = new google.maps.LatLng(coor);
+  map.setCenter(reCenter);
   map.setStreetView(panorama);
 
 
@@ -182,9 +182,16 @@ function geoFindMe() {
 }
 
 
-function doParticipate(phone,email, firstName, lastName, facebookId, googleId, profileImg) {
-var cookiePromotions = $.cookie('promotions');
+function doParticipate(phone, email, firstName, lastName, facebookId, googleId, profileImg) {
+  var cookiePromotions = $.cookie('promotions');
 
+  function getQueryVariable(index) {
+    var query = window.location.toString();
+    var parts = query.split("/");
+    return parts[index];
+  }
+
+let refFriend = getQueryVariable(4);
 
 
   var form = {
@@ -197,6 +204,7 @@ var cookiePromotions = $.cookie('promotions');
     "profileImg": profileImg,
     "promoId": promoId,
     "promo_id": promo_id,
+    "refFriend": refFriend,
   };
 
   $.ajax({
@@ -204,11 +212,11 @@ var cookiePromotions = $.cookie('promotions');
     url: '//' + window.location.host + '/api/participate/',
     data: form,
     success: function (response) {
-      console.log('Perticipating successfuly: '+response);
+      console.log('Perticipating successfuly: ' + response);
       window.location.reload(true); //reload promotion
     },
     error: function (error) {
-      console.error('Error when trying to participate: '+ error);
+      console.error('Error when trying to participate: ' + error);
     }
   });
 
@@ -262,13 +270,13 @@ function testAPI() {
 
     if (response.permissions.data[1].status === 'declined') {
 
-    //  document.getElementById('status').innerHTML = 'We also need your email.<button onClick="javasript:reAskForEmail()">GIVE MY EMAIL</button>';
+      //  document.getElementById('status').innerHTML = 'We also need your email.<button onClick="javasript:reAskForEmail()">GIVE MY EMAIL</button>';
 
     } else {
       console.log('Successful login for: ' + response.name);
-    //  document.getElementById('status').innerHTML = 'Thanks for logging in, ' + response.name + '! Your email is: ' + response.email;
+      //  document.getElementById('status').innerHTML = 'Thanks for logging in, ' + response.name + '! Your email is: ' + response.email;
 
-      doParticipate(undefined,response.email, response.first_name, response.last_name, response.id, undefined, response.picture.data.url);
+      doParticipate(undefined, response.email, response.first_name, response.last_name, response.id, undefined, response.picture.data.url);
     }
   });
 }
@@ -354,8 +362,8 @@ function initClient() {
     // Listen for sign-in state changes.
     gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
     // Handle the initial sign-in state.
-   /////// updateSigninStatus();
-   isSignedInGoogle = gapi.auth2.getAuthInstance().isSignedIn.get();
+    /////// updateSigninStatus();
+    isSignedInGoogle = gapi.auth2.getAuthInstance().isSignedIn.get();
     updateSigninStatus(false);
     authorizeButton.onclick = handleAuthClick;
     // signoutButton.onclick = handleSignoutClick;
@@ -366,18 +374,18 @@ function updateSigninStatus(isSignedIn) {
   if (isSignedIn) {
     // authorizeButton.style.display = 'none';
     // signoutButton.style.display = 'block';
-    makeApiCall(); 
+    makeApiCall();
   } else {
-   // authorizeButton.style.display = 'block';
+    // authorizeButton.style.display = 'block';
     // signoutButton.style.display = 'none';
   }
 }
 
 function handleAuthClick(event) {
   console.log("login handle" + event);
-  if(isSignedInGoogle){
+  if (isSignedInGoogle) {
     makeApiCall();
-  }else{
+  } else {
     gapi.auth2.getAuthInstance().signIn();
     gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
   }
@@ -404,9 +412,9 @@ function makeApiCall() {
 
     doParticipate(undefined, email, givenName, familyName, undefined, id, profileImage);
 
-  // var p = document.createElement('p');
-  //  p.appendChild(document.createTextNode('Hello, ' + name + '! Your email is: ' + email));
-  // document.getElementById('content').appendChild(p);
+    // var p = document.createElement('p');
+    //  p.appendChild(document.createTextNode('Hello, ' + name + '! Your email is: ' + email));
+    // document.getElementById('content').appendChild(p);
   });
 }
 
@@ -419,45 +427,45 @@ $(document).ready(function () {
   //Funcion para notificar la obtencion de nuevos puntos
   function notificarPuntos(tipo, puntos) {
 
-    var textoMensaje, tipoAlerta, puntos, plantillaEspecial,tiempoEspera;
+    var textoMensaje, tipoAlerta, puntos, plantillaEspecial, tiempoEspera;
     switch (tipo) {
       case 0:
-      tiempoEspera = 10000;
+        tiempoEspera = 10000;
         textoMensaje = 'Nuevo amigo visitando tu enlace. Anímalos a participar.';
         tipoAlerta = 'success';
-       plantillaEspecial = '<br> <p class="text-center" style="font-size: large"></p> <p class="text-center" style="font-size: x-large;"><strong>+ ' + puntos + textoPuntos + '  </strong></p><span class="text-center center-block "><small>  Hemos añadido los puntos a tu perfil.</small></span>';
+        plantillaEspecial = '<br> <p class="text-center" style="font-size: large"></p> <p class="text-center" style="font-size: x-large;"><strong>+ ' + puntos + textoPuntos + '  </strong></p><span class="text-center center-block "><small>  Hemos añadido los puntos a tu perfil.</small></span>';
         navigator.vibrate([100, 0, 90]);
         break;
       case 1:
-      tiempoEspera = 10000;
+        tiempoEspera = 10000;
         textoMensaje = 'Nuevo amigo participando. Sigue compartiendo.';
         tipoAlerta = 'warning';
-       plantillaEspecial = '<br> <p class="text-center" style="font-size: large"></p> <p class="text-center" style="font-size: x-large;"><strong>+ ' + puntos + textoPuntos + '  </strong></p><span class="text-center center-block "><small>  Hemos añadido los puntos a tu perfil.</small></span>';
+        plantillaEspecial = '<br> <p class="text-center" style="font-size: large"></p> <p class="text-center" style="font-size: x-large;"><strong>+ ' + puntos + textoPuntos + '  </strong></p><span class="text-center center-block "><small>  Hemos añadido los puntos a tu perfil.</small></span>';
         navigator.vibrate([120, 0, 100]);
         break;
       case 3:
-      tiempoEspera = 10000;
+        tiempoEspera = 10000;
         textoMensaje = 'Te regalamos unos puntos para empezar. Invita a tus amigos para tener más posibilidades de ganar.';
         tipoAlerta = 'warning';
         plantillaEspecial = '<br> <p class="text-center" style="font-size: large"></p> <p class="text-center" style="font-size: x-large;"><strong>+ ' + puntos + textoPuntos + '  </strong></p><span class="text-center center-block "><small>  Hemos añadido los puntos a tu perfil.</small></span>';
         navigator.vibrate([120, 0, 100]);
         break;
       case 10:
-      tiempoEspera = 7000;
+        tiempoEspera = 7000;
         textoMensaje = 'Acabas de recibir una invitación para participar en la promoción.';
         tipoAlerta = 'warning';
         plantillaEspecial: '...';
         navigator.vibrate([120, 0, 100]);
         break;
       case 11:
-      tiempoEspera = 7000;
+        tiempoEspera = 7000;
         textoMensaje = 'Participa y comparte la promoción con tus amigos.';
         tipoAlerta = 'warning';
         plantillaEspecial: '...';
         navigator.vibrate([120, 0, 100]);
         break;
       case 12:
-      tiempoEspera = 7000;
+        tiempoEspera = 7000;
         textoMensaje = 'Por cada amigo que visite tu enlace consigues 1 punto, y si participa 10.';
         tipoAlerta = 'warning';
         plantillaEspecial: '...';
@@ -466,7 +474,7 @@ $(document).ready(function () {
     }
     var textoPuntos = (puntos == 1) ? ' punto' : ' puntos';
     return $.notify({
-      icon: 'fa fa-user-plus', 
+      icon: 'fa fa-user-plus',
       title: textoMensaje,
       message: plantillaEspecial
     }, {
@@ -483,30 +491,30 @@ $(document).ready(function () {
 
   var notificacion = null;
 
-/*
- //Obtiene los parametros de la url REST
-    function getQueryVariable(index) { 
-        var query = window.location.toString();
-        var parts = query.split("/");
-        return parts[index];
-    }
-
-var notif10 = null;
- if (getQueryVariable(4)) {
-   notif10 = notificarPuntos(10);
-} 
-*/
-
+  /*
+   //Obtiene los parametros de la url REST
+      function getQueryVariable(index) { 
+          var query = window.location.toString();
+          var parts = query.split("/");
+          return parts[index];
+      }
   
+  var notif10 = null;
+   if (getQueryVariable(4)) {
+     notif10 = notificarPuntos(10);
+  } 
+  */
 
 
 
-  function notifyPoints(tipo,puntos) {
+
+
+  function notifyPoints(tipo, puntos) {
 
     if (notificacion != null) {
       notificacion.close();
     }
-    notificacion = notificarPuntos(tipo,puntos);
+    notificacion = notificarPuntos(tipo, puntos);
 
     //quitar al hacer clic
     $('.alert').click(function () {
@@ -521,16 +529,18 @@ var notif10 = null;
 
 
 
- $('button.login-participate').click(function(){
-   var inputFormParticipate = $('.participate-input').val();
-    if(type=='phone'){
+  $('button.login-participate').click(function (e) {
+    $(this).attr("disabled", "disabled");
+    e.preventDefault();
+    var inputFormParticipate = $('.participate-input').val();
+    if (type == 'phone') {
       doParticipate(inputFormParticipate, undefined, undefined, undefined, undefined, undefined, undefined);
-    
-    }else if(type=='email'){
-      doParticipate(undefined,inputFormParticipate, undefined, undefined, undefined, undefined, undefined);
+
+    } else if (type == 'email') {
+      doParticipate(undefined, inputFormParticipate, undefined, undefined, undefined, undefined, undefined);
     }
-    
- })
+
+  })
 
   var state = false;
   var type = '';
@@ -619,7 +629,7 @@ var notif10 = null;
 
   /*Share buttons*/
   $('.whatsapp.button').click(function () {
-    window.location = 'whatsapp://send?text=Esto es un mensaje de ejemplo para Whatsapp whatspromo.com/cocacola';
+    window.location = 'whatsapp://send?text=https://whatspromo.com/'+promoId+'/'+$.cookie("userId");
   });
   $('.messenger.button').click(function () {
     var link = "whatspromo.com/cocacola";
