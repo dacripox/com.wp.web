@@ -60,8 +60,13 @@
               <br> más puntos </div>
             </button>
                   <script>
-                    fbq('track', 'CompleteRegistration');
-
+                  
+                    ga('promotion.send', {
+                      hitType: 'event',
+                      eventCategory: 'WhatsPromo',
+                      eventAction: 'Registro',
+                      eventLabel: 'Usuario Registrado Correctamente'
+                    });
                     OneSignal.push(["sendTags", {promoId: "{{{promotion.promoId}}}", userId: "{{{user.userId}}}"]);
                   </script>
        {{/if}}
