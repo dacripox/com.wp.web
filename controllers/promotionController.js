@@ -256,7 +256,7 @@ module.exports = {
                 res.render('mobile-version', { title: promotion.promoTitle, promotion: promotion, participation: participation, user: user, winners: winners });
             } else {
                 console.log('show promotion on desktop');                //Desktop promotion
-                res.render('mobile-version', { title: promotion.promoTitle, promotion: promotion, participation: participation, user: user, winners: winners/*[{ name: 'Maria', points: 777, profileImg: 'http://semantic-ui.com/images/avatar2/small/molly.png' },{ name: 'Maria', points: 777 },{ name: 'Maria', points: 777, profileImg: 'http://semantic-ui.com/images/avatar2/small/molly.png' },{ name: 'Maria', points: 777}] */ });
+                res.render('desktop-version', { title: promotion.promoTitle, promotion: promotion, participation: participation, user: user, winners: winners/*[{ name: 'Maria', points: 777, profileImg: 'http://semantic-ui.com/images/avatar2/small/molly.png' },{ name: 'Maria', points: 777 },{ name: 'Maria', points: 777, profileImg: 'http://semantic-ui.com/images/avatar2/small/molly.png' },{ name: 'Maria', points: 777}] */ });
             }
         }
 
