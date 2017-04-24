@@ -250,7 +250,7 @@ module.exports = {
         }
 
         let showPromotion = (promotion, user, participation, winners, requestType) => {
-            if (requestType == 'mobile') {
+            if (requestType == 'mobile' || requestType == 'bot') {
                 console.log('show promotion on mobile');
                 //Mobile promotion
                 res.render('mobile-version', { title: promotion.promoTitle, promotion: promotion, participation: participation, user: user, winners: winners });
