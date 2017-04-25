@@ -232,6 +232,8 @@ module.exports = {
         const promoId = req.params.promoId;
         const refFriend = req.params.refFriend;
 
+        let participatingThisPromo = false;
+
         let requestType = 'desktop';
         //Check if mobile 
         let md = new mobileDetect(req.headers['user-agent']);
@@ -304,6 +306,7 @@ module.exports = {
                     })
                     p.then((cookiePromoExist) => {
                         console.log('Cookie promotion exists: ' + cookiePromoExist);
+                        if (cookiePromoExist) {participatingThisPromo = true;}
                         if (!cookiePromoExist) {
                             var newCookiePromotion = {
                                 'promoId': promoId,
@@ -341,7 +344,7 @@ module.exports = {
 
                                     if (refFriendExists) {
                                         console.log('refFriend exists ' + refFriendExists);
-                                        if (!cookiePromoExist) {
+                                        if (!participatingThisPromo) {
                                             await incrementPoints(refFriend, promoId, 1);
                                             await incrementVisualization(refFriend, promoId);
                                         }
