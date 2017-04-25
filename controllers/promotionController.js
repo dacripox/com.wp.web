@@ -158,7 +158,7 @@ let existsUser = async (user) => {
     console.log('Checking if user already exists, before participating');
     let formData = {};
     try {
-        let response = await request.get({ url: 'http://localhost:3000/user/exist/id/'+user.userId+'/email/' + user.email + '/phone/' + user.phone, form: formData });
+        let response = await request.get({ url: 'http://localhost:3000/user/exist/id/' + user.userId + '/email/' + user.email + '/phone/' + user.phone, form: formData });
         return response;
     } catch (error) {
         console.log('REQ. ERROR: When checking if user exists: ' + error);
@@ -341,10 +341,10 @@ module.exports = {
 
                                     if (refFriendExists) {
                                         console.log('refFriend exists ' + refFriendExists);
-
-                                        await incrementPoints(refFriend, promoId, 1);
-                                        await incrementVisualization(refFriend, promoId);
-
+                                        if (requestType != 'bot') {
+                                            await incrementPoints(refFriend, promoId, 1);
+                                            await incrementVisualization(refFriend, promoId);
+                                        }
                                         //Crate promotioN cookie in promotionS cookie (with refFriend --add to cookie)
                                         if (req.cookies.promotions) { let cookiePromotions = req.cookies.promotions; }
                                         let p = new Promise((resolve, reject) => {
@@ -418,41 +418,41 @@ module.exports = {
                 } //end if-else promotion (make raffle / not make raffle)
 
 
-                renderPromotion = async() => {
+                renderPromotion = async () => {
 
-                   // setTimeout(async () => {
-                        //If user not set in Cookie, create one user and set to cookie
-                        if (userId == undefined) {
-                            console.log('creating user id');
-                            let userId = userController.createUserId();
-                            res.cookie('userId', userId, { expires: new Date(Date.now() + 2592000000000) });
+                    // setTimeout(async () => {
+                    //If user not set in Cookie, create one user and set to cookie
+                    if (userId == undefined) {
+                        console.log('creating user id');
+                        let userId = userController.createUserId();
+                        res.cookie('userId', userId, { expires: new Date(Date.now() + 2592000000000) });
 
+                        //Show promotion (new user)
+                        showPromotion(promotion, undefined, undefined, undefined, requestType);
+
+                    } else {
+                        console.log('User already created');
+                        //If user already set in cookie, check if participating
+                        let alreadyParticipating = await isParticipating(userId, promoId);
+
+                        if (alreadyParticipating == true) {
+                            console.log('user already participating');
+                            let user = await getUser(userId);
+                            let participation = await getParticipation(userId, promoId);
+                            //Show promotion (with user details)
+                            console.log('user is: ' + user);
+                            res.cookie('userId', user.userId, { expires: new Date(Date.now() + 2592000000000) });
+                            showPromotion(promotion, user, participation, undefined, requestType);
+                        }
+                        else {
+                            console.log('user not participating ');
                             //Show promotion (new user)
                             showPromotion(promotion, undefined, undefined, undefined, requestType);
-
-                        } else {
-                            console.log('User already created');
-                            //If user already set in cookie, check if participating
-                            let alreadyParticipating = await isParticipating(userId, promoId);
-
-                            if (alreadyParticipating == true) {
-                                console.log('user already participating');
-                                let user = await getUser(userId);
-                                let participation = await getParticipation(userId, promoId);
-                                //Show promotion (with user details)
-                                console.log('user is: ' + user);
-                                res.cookie('userId', user.userId, { expires: new Date(Date.now() + 2592000000000) });
-                                showPromotion(promotion, user, participation, undefined, requestType);
-                            }
-                            else {
-                                console.log('user not participating ');
-                                //Show promotion (new user)
-                                showPromotion(promotion, undefined, undefined, undefined, requestType);
-                            } //end if-else user already participating
-                        }// end if-else (creat new user / get existing user)
+                        } //end if-else user already participating
+                    }// end if-else (creat new user / get existing user)
 
 
-                   // }, 4000);
+                    // }, 4000);
                 }
 
 
