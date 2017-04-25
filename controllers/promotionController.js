@@ -349,7 +349,7 @@ module.exports = {
 
                                     if (refFriendExists) {
                                         console.log('refFriend exists ' + refFriendExists);
-                                        if (!participatingThisPromo && requestType != 'bot') {
+                                        if (!participatingThisPromo && requestType == 'mobile') {
                                             await incrementPoints(refFriend, promoId, 1);
                                             await incrementVisualization(refFriend, promoId);
                                         }
