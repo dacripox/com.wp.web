@@ -237,6 +237,7 @@ module.exports = {
         let requestType = 'desktop';
         //Check if mobile 
         let md = new mobileDetect(req.headers['user-agent']);
+        console.log(req.headers['user-agent']);
         if (md.is('bot')) {
             console.log('bot access');
             requestType = 'bot';
@@ -246,9 +247,13 @@ module.exports = {
         } else if (md.is('desktopmode')) {
             console.log('desktopmode access');
             requestType = 'desktop';
-        } else {
+        } else if(req.headers['user-agent'] && (req.headers['user-agent'].contains('bot')) && (req.headers['user-agent'].contains('whatsapp'))  ) {
+            console.log('special bot access');
+            requestType = 'bot';
+        }else{
             console.log('other device access');
             requestType = 'desktop';
+
         }
 
         let showPromotion = (promotion, user, participation, winners, requestType) => {
@@ -344,7 +349,7 @@ module.exports = {
 
                                     if (refFriendExists) {
                                         console.log('refFriend exists ' + refFriendExists);
-                                        if (!participatingThisPromo) {
+                                        if (!participatingThisPromo && requestType != 'bot') {
                                             await incrementPoints(refFriend, promoId, 1);
                                             await incrementVisualization(refFriend, promoId);
                                         }
