@@ -250,7 +250,7 @@ module.exports = {
         }
 
         let showPromotion = (promotion, user, participation, winners, requestType) => {
-            if (requestType == 'mobile' || requestType == 'bot') {
+            if (requestType == 'mobile') {
                 console.log('show promotion on mobile');
                 //Mobile promotion
                 res.render('mobile-version', { title: promotion.promoTitle, promotion: promotion, participation: participation, user: user, winners: winners });
@@ -335,13 +335,13 @@ module.exports = {
 
 
                                 ////////////////////////////////
-                                if (!alreadyRefered && userId != refFriend/*not same user*/) { //Special cookie for limit once incrementations
+                                if ( !alreadyRefered && userId != refFriend/*not same user*/) { //Special cookie for limit once incrementations
                                     console.log('Setting special points cookie');
                                     let refFriendExists = await checkRefFriend(refFriend);
 
                                     if (refFriendExists) {
                                         console.log('refFriend exists ' + refFriendExists);
-                                        if (requestType != 'bot') {
+                                        if (!cookiePromoExist) {
                                             await incrementPoints(refFriend, promoId, 1);
                                             await incrementVisualization(refFriend, promoId);
                                         }

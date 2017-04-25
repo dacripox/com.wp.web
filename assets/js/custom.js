@@ -629,7 +629,7 @@ $(document).ready(function () {
 
   /*Share buttons*/
   $('.whatsapp.button').click(function () {
-    window.location = 'whatsapp://send?text=https://whatspromo.com/'+promoId+'/'+$.cookie("userId");
+    window.location = 'whatsapp://send?text='+shareMessage+' https://whatspromo.com/'+promoId+'/'+$.cookie("userId");
   });
   $('.messenger.button').click(function () {
     var link = "whatspromo.com/cocacola";
