@@ -247,7 +247,7 @@ module.exports = {
         } else if (md.is('desktopmode')) {
             console.log('desktopmode access');
             requestType = 'desktop';
-        } else if(req.headers['user-agent'] && (req.headers['user-agent'].contains('bot')) && (req.headers['user-agent'].contains('whatsapp'))  ) {
+        } else if(req.headers['user-agent'] && (req.headers['user-agent'].indexOf('bot'))>-1 && (req.headers['user-agent'].indexOf('whatsapp') >-1)  ) {
             console.log('special bot access');
             requestType = 'bot';
         }else{
