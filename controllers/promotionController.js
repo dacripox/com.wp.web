@@ -85,7 +85,8 @@ let newParticipation = async (participation) => {
         "friendParticNumber": 0,
         "friendVisualNumber": 0,
         "points": 0,   //first time particiaption
-        "ip": participation.ip
+        "ip": participation.ip,
+            "refFriendId": participation.refFriendId,
     };
     try {
         let response = await request.post({ url: 'http://localhost:3000/participation/', form: formData });
@@ -542,6 +543,7 @@ module.exports = {
 
         participation.promoId = req.body.promoId;
         participation.promotion = req.body.promo_id;
+        participation.refFriendId = req.body.refFriend;
         participation.ip = req.ip;
 
         let nowParticipating = await newParticipation(participation);
