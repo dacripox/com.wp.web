@@ -45,7 +45,9 @@
  color: #aaa;
 }
 
-
+.friends-info > p{
+    margin-bottom: 0;
+} 
 
 .ui.header.title {
  font-weight: 300;
