@@ -275,7 +275,7 @@ function testAPI() {
     } else {
       console.log('Successful login for: ' + response.name);
       //  document.getElementById('status').innerHTML = 'Thanks for logging in, ' + response.name + '! Your email is: ' + response.email;
-
+ ga('send', 'event', 'WebApp', 'buttton', 'participate_facebook_inner_button');
       doParticipate(undefined, response.email, response.first_name, response.last_name, response.id, undefined, response.picture.data.url);
     }
   });
@@ -403,6 +403,7 @@ function makeApiCall() {
   gapi.client.people.people.get({
     resourceName: 'people/me'
   }).then(function (resp) {
+     ga('send', 'event', 'WebApp', 'buttton', 'participate_google_inner_button');
     var name = resp.result.names[0].displayName;
     var givenName = resp.result.names[0].givenName;
     var familyName = resp.result.names[0].familyName;
@@ -534,9 +535,11 @@ $(document).ready(function () {
     e.preventDefault();
     var inputFormParticipate = $('.participate-input').val();
     if (type == 'phone') {
+      ga('send', 'event', 'WebApp', 'buttton', 'participate_phone_inner_button');
       doParticipate(inputFormParticipate, undefined, undefined, undefined, undefined, undefined, undefined);
 
     } else if (type == 'email') {
+       ga('send', 'event', 'WebApp', 'buttton', 'participate_email_inner_button');
       doParticipate(undefined, inputFormParticipate, undefined, undefined, undefined, undefined, undefined);
     }
 
@@ -558,7 +561,7 @@ $(document).ready(function () {
   })
 
   $('.participate-input').on('keyup change paste  ', function (e) {
-
+    
     var $icon = $('.verify-icon');
 
     if ($(this).val().length > 0) {
@@ -629,9 +632,11 @@ $(document).ready(function () {
 
   /*Share buttons*/
   $('.whatsapp.button').click(function () {
+    ga('send', 'event', 'WebApp', 'buttton', 'whatsapp_share_button');
     window.location = 'whatsapp://send?text='+shareMessage+' https://whatspromo.com/'+promoId+'/'+$.cookie("userId");
   });
   $('.messenger.button').click(function () {
+    ga('send', 'event', 'WebApp', 'buttton', 'fbmessenger_share_button');
     var link = "whatspromo.com/cocacola";
     var app_id = '1485419298444998';
     window.location = 'fb-messenger://share?link=' + encodeURIComponent(link) + '&app_id=' + encodeURIComponent(app_id);
@@ -659,21 +664,27 @@ $(document).ready(function () {
 
 
   /*Login modal*/
+  $('.modal.login').click(function(e){ ga('send', 'event', 'WebApp', 'buttton', 'participate_button'); });
   $('.modal.login').modal('attach events', '.button.participate', 'show');
 
   /*Profile modal*/
+  $('.modal.profile').click(function(e){ ga('send', 'event', 'WebApp', 'buttton', 'profile_button'); });
   $('.modal.profile').modal('attach events', '.item.profile', 'show');
 
   /*Settings modal*/
+   $('.modal.settings').click(function(e){ ga('send', 'event', 'WebApp', 'buttton', 'settings_share_button'); });
   $('.modal.settings').modal('attach events', '.item.settings', 'show');
 
   /*Report modal*/
+   $('.modal.report').click(function(e){ ga('send', 'event', 'WebApp', 'buttton', 'report_share_button'); });
   $('.modal.report').modal('attach events', '.item.report', 'show');
 
   /*Share promo modal*/
+   $('.modal.login').click(function(e){ ga('send', 'event', 'WebApp', 'buttton', 'general_share_button'); });
   $('.modal.share').modal('attach events', '.button.share', 'show');
 
   /*FAQ's modal*/
+   $('.modal.faqs').click(function(e){ ga('send', 'event', 'WebApp', 'buttton', 'faqs_button'); });
   $('.modal.faqs').modal('attach events', '.item.faqs', 'show');
 
   $('XX.modal.login')
