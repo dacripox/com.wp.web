@@ -9,6 +9,8 @@ var https = require('https');
 var fs = require('fs');
 require('dotenv').config();
 
+var htmlToText = require('html-to-text');
+
 
 app.use(favicon(path.join(__dirname, 'assets/favicons', 'favicon.ico')))
 
@@ -50,7 +52,12 @@ hbs.registerHelper("userIsParticipating", function (participation) {
   return participation ? true : false;
 });
 
-
+hbs.registerHelper("htmlToPlainText", function (html) {
+  return htmlToText.fromString(html, {
+    ignoreHref: true,
+    uppercaseHeadings :false,
+  });
+});
 
 app.use('/manifest.json', express.static(path.join(__dirname, 'manifest.json')));
 app.use('/OneSignalSDKUpdaterWorker.js', express.static(path.join(__dirname, 'OneSignalSDKUpdaterWorker.js')));
@@ -105,8 +112,8 @@ app.use('/auth/stats', auth, stats);
 */
 
 if (process.env.PRODUCTION == 1) {
- 
- 
+
+
   const options = {
     key: fs.readFileSync(process.env.SSL_KEY || path.join(__dirname, 'local/key.pem')),
     cert: fs.readFileSync(process.env.SSL_CERT || path.join(__dirname, 'local/cert.pem'))
@@ -117,9 +124,9 @@ if (process.env.PRODUCTION == 1) {
 
 } else {
 
- 
+
   app.listen(process.env.PORT || 3001, function () {
-    console.log('WhatsPromo WebApp listening on port '+(process.env.PORT || 3001)+'!');
+    console.log('WhatsPromo WebApp listening on port ' + (process.env.PORT || 3001) + '!');
 
     console.log(",--.   ,--.,--.               ,--.         ,------.                                 ");
     console.log("|  |   |  ||  ,---.  ,--,--.,-'  '-. ,---. |  .--. ',--.--. ,---. ,--,--,--. ,---.  ");
