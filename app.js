@@ -58,6 +58,10 @@ hbs.registerHelper("htmlToPlainText", function (html) {
     uppercaseHeadings :false,
   });
 });
+hbs.registerHelper("customParticipationNumber", function (participationsNumber) {
+  return participationsNumber>50 ? "+50" : participationsNumber;
+
+});
 
 app.use('/manifest.json', express.static(path.join(__dirname, 'manifest.json')));
 app.use('/OneSignalSDKUpdaterWorker.js', express.static(path.join(__dirname, 'OneSignalSDKUpdaterWorker.js')));
