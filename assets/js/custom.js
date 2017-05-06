@@ -637,7 +637,7 @@ $(document).ready(function () {
   });
   $('.messenger.button').click(function () {
     ga('send', 'event', 'WebApp', 'buttton', 'fbmessenger_share_button');
-    var link = "whatspromo.com/cocacola";
+    var link = 'https://whatspromo.com/'+promoId;
     var app_id = '1485419298444998';
     window.location = 'fb-messenger://share?link=' + encodeURIComponent(link) + '&app_id=' + encodeURIComponent(app_id);
   });
