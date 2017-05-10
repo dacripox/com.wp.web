@@ -1,4 +1,8 @@
 /*Custom*/
+body > div.pusher > div.ui.sticky.fixed.bottom > div > div > div{
+    margin:0; /*hot fix, new semantic version*/
+}
+
  @font-face {
     font-family: NovaSoft;
     src: url('https://cdn.rawgit.com/GordyD/rethinkdb-pres/bbec0b1d/fonts/proxima-nova-soft-normal-webfont.ttf?raw=true');
