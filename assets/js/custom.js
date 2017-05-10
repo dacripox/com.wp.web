@@ -1,5 +1,23 @@
+/*Handel webapp "add to home" user event*/
+window.addEventListener('beforeinstallprompt', function(e) {
+  // beforeinstallprompt Event fired
+
+  // e.userChoice will return a Promise.
+  e.userChoice.then(function(choiceResult) {
+
+    console.log(choiceResult.outcome);
+
+    if(choiceResult.outcome == 'dismissed') {
+      ga('send', 'event', 'WebApp', 'add_to_home', 'cancel_button');
+    }
+    else {
+      ga('send', 'event', 'WebApp', 'add_to_home', 'accept_button');
+    }
+  });
+});
 
 
+/*Points notifications*/
 var beforePoints = -1;
 function updateParticipationInfo() {
   $.ajax({
