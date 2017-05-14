@@ -670,6 +670,8 @@ $(document).ready(function () {
     }
     $(this).toggleClass('opened');
 
+    //Refresh map
+    google.maps.event.trigger(map, "resize");
   });
 
 
