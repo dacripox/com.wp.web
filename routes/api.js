@@ -19,6 +19,12 @@ router.post('/participate', promotionController.doParticipate);
 /*
  * POST
  */
+router.post('/user/:userId/enablepush', userController.enablePushForUser);
+
+
+/*
+ * POST
+ */
 router.post('/report/:userId/:promoId', promotionController.reportPromotion);
 
 
