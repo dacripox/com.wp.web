@@ -1,9 +1,7 @@
 {{!< default}} 
-
 {{#contentFor 'pageStyles'}} <style>
       </style>
       {{/contentFor}} 
-      
       {{#contentFor 'customScripts'}}
       <script>
             var endPromotionDateStr = "{{{promotion.endDate}}}";
@@ -15,49 +13,45 @@
             var promoLat = "{{{promotion.lat}}}";
             var promoLng = "{{{promotion.lng}}}";
             var shareMessage = "{{{promotion.shareMessages}}}";
-
       </script>
       {{/contentFor}} 
-      
       {{#contentFor 'googleAnalyticsScripts'}}
       <script type="text/javascript">
-
- ga('create', '{{{promotion.googleTrackingPixel}}}', 'promotion');
-  ga('promotion.send', 'pageview');
-
+            ga('create', '{{{promotion.googleTrackingPixel}}}', 'promotion');
+            ga('promotion.send', 'pageview');
       </script>
       {{/contentFor}} 
-
       {{#contentFor 'facebookAnalyticsScripts'}}
-            <!-- Facebook Pixel Code -->
-            <script>
-            !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-            n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-            n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-            t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
-            document,'script','https://connect.facebook.net/es_ES/fbevents.js');
-            
+      <!-- Facebook Pixel Code -->
+      <script>
+            !function (f, b, e, v, n, t, s) {
+                  if (f.fbq) return; n = f.fbq = function () {
+                        n.callMethod ?
+                              n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+                  }; if (!f._fbq) f._fbq = n;
+                  n.push = n; n.loaded = !0; n.version = '2.0'; n.queue = []; t = b.createElement(e); t.async = !0;
+                  t.src = v; s = b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t, s)
+            }(window,
+                  document, 'script', 'https://connect.facebook.net/es_ES/fbevents.js');
+
             fbq('init', '199917957187127'); // WhatsPromo pixel.
             fbq('init', '{{{promotion.facebookTrackingPixel}}}'); // Insert your pixel ID here.
-            
+
             fbq('track', 'PageView');
-            
-            </script>
-            <noscript>
-                  <img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=199917957187127&ev=PageView&noscript=1"/>
-                  <img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id={{{promotion.facebookTrackingPixel}}}&ev=PageView&noscript=1"
+      </script>
+      <noscript>
+            <img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=199917957187127&ev=PageView&noscript=1"
+            />
+            <img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id={{{promotion.facebookTrackingPixel}}}&ev=PageView&noscript=1"
             /></noscript>
-            <!-- DO NOT MODIFY -->
-            <!-- End Facebook Pixel Code -->
+      <!-- DO NOT MODIFY -->
+      <!-- End Facebook Pixel Code -->
 
 
 
 
 
       {{/contentFor}} 
-
-      
-      
       {{#contentFor 'OneSignalScripts'}}
       <script type="text/javascript">
             function subscribe() {
@@ -84,15 +78,38 @@
             OneSignal.push(function () {
                   // If we're on an unsupported browser, do nothing
                   if (!OneSignal.isPushNotificationsSupported()) {
+                        console.log("NOT ALLOWED - onesignal suscribe modal");
                         return;
                   }
                   OneSignal.isPushNotificationsEnabled(function (isEnabled) {
                         if (isEnabled) {
                               // The user is subscribed to notifications
                               // Don't show anything
+                              console.log("ENABLED - onesignal suscribe modal");
                         } else {
-                              document.getElementById("subscribe-link").addEventListener('click', subscribe);
-                              document.getElementById("subscribe-link").style.display = '';
+                              console.log("ASK - onesignal suscribe modal");
+
+                              if (userParticipating == "true" && promoEnded == "false") {
+                                    setTimeout(function () {
+                                          /*Enable push modal*/
+                                          $('.ask-push.modal').click(function (e) { ga('send', 'event', 'WebApp', 'modal', 'ask_for_push_notifications'); });
+                                          $('.ask-push.modal').modal({
+                                                closable: true,
+                                                onDeny: function () {
+                                                      console.log('Cancela notificaciones push');
+                                                      $('.ask-push.modal').click(function (e) { ga('send', 'event', 'WebApp', 'modal', 'ask_for_push_notifications_cancel'); });
+                                                      return false;
+                                                },
+                                                onApprove: function () {
+                                                      console.log('Acepta notificaciones push');
+                                                      $('.ask-push.modal').click(function (e) { ga('send', 'event', 'WebApp', 'modal', 'ask_for_push_notifications_approve'); });
+
+                                                      subscribe();
+                                                }
+                                          }).modal('show');
+                                    }, 8000);
+                              }
+
                         }
                   });
             });
@@ -104,20 +121,37 @@
                               // The user is subscribed
                               //   Either the user subscribed for the first time
                               //   Or the user was subscribed -> unsubscribed -> subscribed
-                              OneSignal.getUserId(function (userId) {
-                                    // Make a POST call to your server with the user ID
+                              OneSignal.getUserId(function (onsesignalId) {
+                                    var userId = $.cookie("userId");
 
-                                    $.cookie('onesignalId',userId);
+                                    //Attach Promotion ID to OneSignal UUID as a tag
+                                    OneSignal.push(["sendTag", "promoId", promoId]);
+                                    OneSignal.push(["sendTag", "userId", userId]);
+
+                                    // Make a POST call to your server with the user ID
+                                    $.ajax({
+                                          type: "POST",
+                                          url: '//' + window.location.host + '/api/user/' + userId + '/enablepush',
+                                          dataType: "json",
+                                          data: {
+                                                onsesignalId: onsesignalId,
+                                                promoId : promoId
+                                          },
+                                          success: function (data) {
+                                                console.error("OneSignalId ("+onsesignalId +") succesfull set for user: "+userId);
+                                          },
+                                          error: function () {
+                                                console.error("Cannot set OneSignalId and increment points ");
+                                          }
+                                    });
+
                               });
 
-
-                              //Attach Promotion ID to OneSignal UUID as a tag
-                              //OneSignal.push(["sendTag", "promotionID", "anyID"]);
+  
 
                         }
                   });
             });
-
       </script>
       {{/contentFor}}
 
@@ -131,11 +165,15 @@
       <!-- Page Contents-->
       <div class="pusher">
 
+            <!--Modal enable-push-->
+            {{>modal-enable-push}}
+            <!--end Modal enable-push-->
+
             <!--Modal Login-->
             {{>modal-login}}
             <!--end Modal Login-->
 
-   <!--Modal FAQs-->
+            <!--Modal FAQs-->
             {{>modal-faqs}}
 
             <!--end Modal FAQs-->
@@ -162,8 +200,10 @@
   <!-- Menu handler icon (mobile)-->
             <div class="ui vertical segment web-title-container">
                   <div class="toc item">
-                      {{!--Show own logo only if free promotion (=0) --}}
-                      {{#unless promotion.promoType}}  <img class="ui fluid image logo" src="../assets/img/logo_1.png" alt=""> {{/unless}}
+                        {{!--Show own logo only if free promotion (=0) --}} 
+                        {{#unless promotion.promoType}} 
+                        <img class="ui fluid image logo" src="../assets/img/logo_1.png" alt=""> 
+                        {{/unless}}
                         <i class="right-icon large sidebar icon"></i>
                   </div>
 
@@ -176,12 +216,14 @@
                   {{!--
                   <img class="ui fluid image promo" src="https://images.unsplash.com/photo-1418225043143-90858d2301b4?ixlib=rb-0.3.5&q=80&fm=jpg&crop=entropy&w=1080&fit=max&s=4801291798afca8b66391084f87d24f7"
                         alt="">--}}
-                        <img class="ui fluid image promo" src="https://{{promotion.promoImage}}" alt="">
-                   {{#if promotion.promoEnded}}     <div class="text">
-                              <h2 class="title"> <i class=" large hourglass empty icon"></i> La promoción ha finalizado </h2>
-                              <p class="subtitle">Comprueba si has sido premiado</p>
-                        </div>
-                        {{/if}}
+                  <img class="ui fluid image promo" src="https://{{promotion.promoImage}}" alt=""> 
+                  
+                  {{#if promotion.promoEnded}}
+                  <div class="text">
+                        <h2 class="title"> <i class=" large hourglass empty icon"></i> La promoción ha finalizado </h2>
+                        <p class="subtitle">Comprueba si has sido premiado</p>
+                  </div>
+                  {{/if}}
             </div>
 
             <!--Promotion title-->
@@ -206,8 +248,8 @@
 
             <!--Sticky menu (bottom)-->
             {{#unless promotion.promoEnded}}
-            {{>sticky-menu}}
-            {{/unless}}
+                {{>sticky-menu}} 
+             {{/unless}}
             <!--end Sticky menu (bottom)-->
 
 

@@ -12,6 +12,7 @@
             var promo_id = "{{{promotion._id}}}";
             var promoEnded = "{{{promotion.promoEnded}}}";
             var userParticipating = "{{{userIsParticipating participation}}}";
+            var pushEnabled = "{{{user.hasPushEnabled}}}";
             var promoLat = "{{{promotion.lat}}}";
             var promoLng = "{{{promotion.lng}}}";
 
@@ -47,66 +48,7 @@
       
       
       {{#contentFor 'OneSignalScripts'}}
-      <script type="text/javascript">
-            function subscribe() {
-                  OneSignal.push(["registerForPushNotifications"]);
-                  event.preventDefault();
-            }
-
-
-            /*Initialize OneSignal SDK*/
-            var OneSignal = window.OneSignal || [];
-            OneSignal.push(["init", {
-                  appId: "8821d4e1-cbef-499a-8f8f-c8d3e3db506f",
-                  safari_web_id: 'web.onesignal.auto.2cb21d9d-922f-420a-8137-99f511b7fc1b',
-
-                  autoRegister: false,
-                  notifyButton: {
-                        enable: true /* Set to false to hide */
-                  }
-            }]);
-
-
-
-            /* Custom message asking for web push suscribe */
-            OneSignal.push(function () {
-                  // If we're on an unsupported browser, do nothing
-                  if (!OneSignal.isPushNotificationsSupported()) {
-                        return;
-                  }
-                  OneSignal.isPushNotificationsEnabled(function (isEnabled) {
-                        if (isEnabled) {
-                              // The user is subscribed to notifications
-                              // Don't show anything
-                        } else {
-                              document.getElementById("subscribe-link").addEventListener('click', subscribe);
-                              document.getElementById("subscribe-link").style.display = '';
-                        }
-                  });
-            });
-
-            /*Handle suscribe action to get OneSignal UUID for storing it with the User ID*/
-            OneSignal.push(function () {
-                  OneSignal.on('subscriptionChange', function (isSubscribed) {
-                        if (isSubscribed) {
-                              // The user is subscribed
-                              //   Either the user subscribed for the first time
-                              //   Or the user was subscribed -> unsubscribed -> subscribed
-                              OneSignal.getUserId(function (userId) {
-                                    // Make a POST call to your server with the user ID
-
-                                    $.cookie('onesignalId',userId);
-                              });
-
-
-                              //Attach Promotion ID to OneSignal UUID as a tag
-                              //OneSignal.push(["sendTag", "promotionID", "anyID"]);
-
-                        }
-                  });
-            });
-
-      </script>
+   
       {{/contentFor}}
 
 

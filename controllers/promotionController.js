@@ -592,5 +592,5 @@ module.exports = {
 
         return res.json(partInfo);
 
-    }
+    }   
 }
