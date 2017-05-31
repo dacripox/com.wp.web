@@ -675,7 +675,7 @@ $(document).ready(function () {
   });
   $('.messenger.button').click(function () {
     ga('send', 'event', 'WebApp', 'buttton', 'fbmessenger_share_button');
-    var link = 'https://whatspromo.com/' + promoId;
+    var link = 'https://whatspromo.com/' + promoId+ '/' + $.cookie("userId"); ;
     var app_id = '1485419298444998';
     window.location = 'fb-messenger://share?link=' + encodeURIComponent(link) + '&app_id=' + encodeURIComponent(app_id);
   });
