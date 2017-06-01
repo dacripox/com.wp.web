@@ -681,7 +681,13 @@ $(document).ready(function () {
   });
 
   /*Accordion Menu*/
-  $('.ui.accordion').accordion();
+  $('.ui.accordion').accordion({
+    onOpen : function(){
+      
+      //Refresh map
+      google.maps.event.trigger(map, "resize");
+    }
+  });
 
   $('#accordion .panel-heading').click(function () {
     var elements = $('#accordion .panel-heading');
@@ -690,8 +696,7 @@ $(document).ready(function () {
     }
     $(this).toggleClass('opened');
 
-    //Refresh map
-    google.maps.event.trigger(map, "resize");
+    
   });
 
 
