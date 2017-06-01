@@ -53,7 +53,7 @@ module.exports = {
         };
         try {
             let user = await request.get({ url: 'http://localhost:3000/user/id/' + userId })
-            let userJSON = JSON.parse(user);
+            let userJSON = JSON.parse(JSON.stringify(user));
 
             let response = await request.put({ url: 'http://localhost:3000/user/' + userJSON._id, form: formData });
             let incrementPoints = await request.post({ url: 'http://localhost:3000/increment-points/user/' + userId + '/promotion/' + promoId + '/points/' + 10 })
@@ -65,12 +65,6 @@ module.exports = {
             console.log('REQ. ERROR: When updating user (onsesgnalId): ' + error);
         }
 
-
-
-
-        console.log(partInfo);
-
-        return res.json(partInfo);
 
     }
 

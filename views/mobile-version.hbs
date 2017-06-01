@@ -202,8 +202,12 @@
                   <div class="toc item">
                         {{!--Show own logo only if free promotion (=0) --}} 
                         {{#unless promotion.promoType}} 
-                        <img class="ui fluid image logo" src="../assets/img/logo_1.png" alt=""> 
+                        <img class="ui fluid image logo" src="../assets/img/logo_1.png" alt="WhatsPromo Logo"> 
                         {{/unless}}
+
+                        {{#if promotion.logoImage}} 
+                        <img class="ui fluid image logo" src="{{promotion.logoImage}}" alt="Custom logo company" style="    max-width: 8em !important;"> 
+                        {{/if}}
                         <i class="right-icon large sidebar icon"></i>
                   </div>
 
