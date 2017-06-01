@@ -97,17 +97,17 @@
                                                 closable: true,
                                                 onDeny: function () {
                                                       console.log('Cancela notificaciones push');
-                                                      $('.ask-push.modal').click(function (e) { ga('send', 'event', 'WebApp', 'modal', 'ask_for_push_notifications_cancel'); });
+                                                       ga('send', 'event', 'WebApp', 'modal', 'ask_for_push_notifications_cancel'); 
                                                       return false;
                                                 },
                                                 onApprove: function () {
                                                       console.log('Acepta notificaciones push');
-                                                      $('.ask-push.modal').click(function (e) { ga('send', 'event', 'WebApp', 'modal', 'ask_for_push_notifications_approve'); });
+                                                      ga('send', 'event', 'WebApp', 'modal', 'ask_for_push_notifications_approve');
 
                                                       subscribe();
                                                 }
                                           }).modal('show');
-                                    }, 8000);
+                                    }, 15000);
                               }
 
                         }
@@ -206,9 +206,9 @@
                         {{/unless}}
 
                         {{#if promotion.logoImage}} 
-                        <img class="ui fluid image logo" src="{{promotion.logoImage}}" alt="Custom logo company" style="    max-width: 8em !important;"> 
+                        <img class="ui fluid image logo" src="{{promotion.logoImage}}" alt="Custom logo company" style="    max-width: 8em !important;     margin-left: 36vw !important;"> 
                         {{/if}}
-                        <i class="right-icon large sidebar icon"></i>
+                        <i class="right-icon large sidebar icon" style="margin-top:10px"></i>
                   </div>
 
 
