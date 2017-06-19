@@ -72,7 +72,10 @@
                   }
             }]);
 
-
+            /*Wrapper ga close push modal*/
+            var closePushModalEvent = function(){
+                  ga('send', 'event', 'WebApp', 'modal', 'ask_for_push_notifications_cancel');
+            }
 
             /* Custom message asking for web push suscribe */
             OneSignal.push(function () {
@@ -97,7 +100,7 @@
                                                 closable: true,
                                                 onDeny: function () {
                                                       console.log('Cancela notificaciones push');
-                                                       ga('send', 'event', 'WebApp', 'modal', 'ask_for_push_notifications_cancel'); 
+                                                      closePushModalEvent();
                                                       return false;
                                                 },
                                                 onApprove: function () {
