@@ -519,6 +519,8 @@ module.exports = {
         user.hasPushEnabled = false;
         user.hasGeolocEnabled = false;
         user.hasProfileCompleted = false;
+        user.ageRange = req.body.ageRange;
+        user.gender = req.body.gender;
 
         let currentUserNoJSON = await existsUser(user);
         let currentUser = JSON.parse(currentUserNoJSON);

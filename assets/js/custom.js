@@ -220,7 +220,7 @@ function geoFindMe() {
 }
 
 
-function doParticipate(phone, email, firstName, lastName, facebookId, googleId, profileImg) {
+function doParticipate(phone, email, firstName, lastName, facebookId, googleId, profileImg, ageRange, gender) {
   var cookiePromotions = $.cookie('promotions');
 
   function getQueryVariable(index) {
@@ -243,6 +243,8 @@ function doParticipate(phone, email, firstName, lastName, facebookId, googleId, 
     "promoId": promoId,
     "promo_id": promo_id,
     "refFriend": refFriend,
+    "ageRange": ageRange,
+    "gender": gender,
   };
 
   $.ajax({
@@ -304,7 +306,7 @@ window.fbAsyncInit = function () {
 // successful.  See statusChangeCallback() for when this call is made.
 function testAPI() {
   console.log('Welcome!  Fetching your information.... ');
-  FB.api('/me?fields=id,name,first_name,last_name,email,picture,permissions', function (response) {
+  FB.api('/me?fields=id,name,first_name,last_name,email,picture,age_range,gender,permissions', function (response) {
 
     if (response.permissions.data[1].status === 'declined') {
 
@@ -314,7 +316,7 @@ function testAPI() {
       console.log('Successful login for: ' + response.name);
       //  document.getElementById('status').innerHTML = 'Thanks for logging in, ' + response.name + '! Your email is: ' + response.email;
       ga('send', 'event', 'WebApp', 'buttton', 'participate_facebook_inner_button');
-      doParticipate(undefined, response.email, response.first_name, response.last_name, response.id, undefined, response.picture.data.url);
+      doParticipate(undefined, response.email, response.first_name, response.last_name, response.id, undefined, response.picture.data.url,rasponse.age_range, response.gender);
     }
   });
 }
@@ -449,7 +451,7 @@ function makeApiCall() {
     var profileImage = resp.result.photos[0].url;
     var id = resp.result.metadata.sources[0].id;
 
-    doParticipate(undefined, email, givenName, familyName, undefined, id, profileImage);
+    doParticipate(undefined, email, givenName, familyName, undefined, id, profileImage, undefined, undefined);
 
     // var p = document.createElement('p');
     //  p.appendChild(document.createTextNode('Hello, ' + name + '! Your email is: ' + email));
@@ -574,11 +576,11 @@ $(document).ready(function () {
     var inputFormParticipate = $('.participate-input').val();
     if (type == 'phone') {
       ga('send', 'event', 'WebApp', 'buttton', 'participate_phone_inner_button');
-      doParticipate(inputFormParticipate, undefined, undefined, undefined, undefined, undefined, undefined);
+      doParticipate(inputFormParticipate, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
 
     } else if (type == 'email') {
       ga('send', 'event', 'WebApp', 'buttton', 'participate_email_inner_button');
-      doParticipate(undefined, inputFormParticipate, undefined, undefined, undefined, undefined, undefined);
+      doParticipate(undefined, inputFormParticipate, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
     }
 
   })
@@ -675,7 +677,7 @@ $(document).ready(function () {
   });
   $('.messenger.button').click(function () {
     ga('send', 'event', 'WebApp', 'buttton', 'fbmessenger_share_button');
-    var link = 'https://whatspromo.com/' + promoId;
+    var link = 'https://whatspromo.com/' + promoId + '/' + $.cookie("userId");
     var app_id = '1485419298444998';
     window.location = 'fb-messenger://share?link=' + encodeURIComponent(link) + '&app_id=' + encodeURIComponent(app_id);
   });
