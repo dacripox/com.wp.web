@@ -709,10 +709,16 @@ $(document).ready(function () {
     dimPage: true,
   });
 
+$('.ui.modal').modal({
+transition:'fade'
+});
 
   /*Login modal*/
-  $('.modal.login').click(function (e) { ga('send', 'event', 'WebApp', 'buttton', 'participate_button'); });
-  $('.modal.login').modal('attach events', '.button.participate', 'show');
+  $('.button.participate').click(function (e) { 
+    $('.modal.login').modal('show');
+    ga('send', 'event', 'WebApp', 'buttton', 'participate_button'); 
+});
+  $('.modal.login').modal('attach events', '', 'show');
 
   /*Profile modal*/
   $('.modal.profile').click(function (e) { ga('send', 'event', 'WebApp', 'buttton', 'profile_button'); });
