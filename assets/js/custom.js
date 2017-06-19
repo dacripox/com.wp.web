@@ -727,7 +727,7 @@ $(document).ready(function () {
   $('.modal.report').modal('attach events', '.item.report', 'show');
 
   /*Share promo modal*/
-  $('.modal.login').click(function (e) { ga('send', 'event', 'WebApp', 'buttton', 'general_share_button'); });
+  $('.modal.share').click(function (e) { ga('send', 'event', 'WebApp', 'buttton', 'general_share_button'); });
   $('.modal.share').modal('attach events', '.button.share', 'show');
 
   /*FAQ's modal*/
