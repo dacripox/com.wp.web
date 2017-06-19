@@ -97,8 +97,11 @@
                                                 closable: true,
                                                 onDeny: function () {
                                                       console.log('Cancela notificaciones push');
-                                                       ga('send', 'event', 'WebApp', 'modal', 'ask_for_push_notifications_cancel'); 
-                                                      return false;
+                                                      return (function(){
+                                                            ga('send', 'event', 'WebApp', 'modal', 'ask_for_push_notifications_cancel');
+                                                            console.log("close push");
+                                                            return false;
+                                                      })();
                                                 },
                                                 onApprove: function () {
                                                       console.log('Acepta notificaciones push');
