@@ -96,7 +96,9 @@
                                           $('.ask-push.modal').modal({
                                                 closable: true,
                                                 onDeny: function () {
-                                                      return false;
+                                                       $('.ask-push.modal').modal('hide');
+                                                       ga('send', 'event', 'WebApp', 'modal', 'ask_for_push_notifications_cancel');
+                                                 
                                                 },
                                                 onApprove: function () {
                                                       console.log('Acepta notificaciones push');
