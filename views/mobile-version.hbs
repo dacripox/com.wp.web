@@ -97,11 +97,8 @@
                                                 closable: true,
                                                 onDeny: function () {
                                                       console.log('Cancela notificaciones push');
-                                                      return (function(){
                                                             ga('send', 'event', 'WebApp', 'modal', 'ask_for_push_notifications_cancel');
-                                                            console.log("close push");
-                                                            return false;
-                                                      })()
+                                                       $('.ask-push.modal').modal('hide');
                                                 },
                                                 onApprove: function () {
                                                       console.log('Acepta notificaciones push');
