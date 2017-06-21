@@ -155,12 +155,13 @@ let makeRaffleAndEnd = async (promoId) => {
 };
 
 
-let existsUser = async (user) => {
+let userExist = async (user) => {
     console.log('Checking if user already exists, before participating');
     let formData = {};
     try {
         let response = await request.get({ url: 'http://localhost:3000/user/exist/id/' + user.userId + '/email/' + user.email + '/phone/' + user.phone, form: formData });
-        return response;
+        //Return user if exists
+        return JSON.parse(response); 
     } catch (error) {
         console.log('REQ. ERROR: When checking if user exists: ' + error);
     }
@@ -215,7 +216,7 @@ let newUser = async (user) => {
     try {
         let response = await request.post({ url: 'http://localhost:3000/user/', form: formData });
         console.log('User succesfully created: ' + response);
-        return response;
+        return JSON.parse(response);
     } catch (error) {
         console.log('REQ. ERROR: When creating User: ' + error);
     }
@@ -344,7 +345,7 @@ module.exports = {
 
 
                                 ////////////////////////////////
-                                if ( !alreadyRefered && userId != refFriend/*not same user*/) { //Special cookie for limit once incrementations
+                                if ( !alreadyRefered && userId != refFriend/*not same user*/) { //Special cookie for limit points
                                     console.log('Setting special points cookie');
                                     let refFriendExists = await checkRefFriend(refFriend);
 
@@ -510,9 +511,9 @@ module.exports = {
         user.userId = req.cookies.userId;
         user.firstName = req.body.firstName;
         user.lastName = req.body.lastName;
-        user.email = req.body.email;
-        user.phone = req.body.phone;
-        user.onesignalId = "req.cookies.onesignalId";
+        user.email = req.body.email.trim();
+        user.phone = req.body.phone.trim();
+        user.onesignalId = "req.cookies.onesignalId"; //TODO
         user.googleId = req.body.googleId;
         user.facebookId = req.body.facebookId;
         user.profileImg = req.body.profileImg;
@@ -522,17 +523,18 @@ module.exports = {
         user.ageRange = req.body.ageRange;
         user.gender = req.body.gender;
 
-        let currentUserNoJSON = await existsUser(user);
-        let currentUser = JSON.parse(currentUserNoJSON);
 
+        //Check if user already exist
+        let currentUser = await userExist(user);
+
+        //Pre-declared variables 
         let newCurrentUser;
         let participation = {};
 
         console.log('current user for user cookie (req.cookies.userId) is' + currentUser);
         if (_.isEmpty(currentUser)) {
-            console.log('user not already participating')
-            let currentUserNoJSON = await newUser(user);
-            newCurrentUser = JSON.parse(currentUserNoJSON);
+            console.log('user not already created')
+            newCurrentUser = await newUser(user);
 
             participation.userId = newCurrentUser.userId;
             participation.user = newCurrentUser._id;
@@ -548,6 +550,12 @@ module.exports = {
         participation.refFriendId = req.body.refFriend;
         participation.ip = req.ip;
 
+        //Check if user already participating
+        let alreadyParticipating = await isParticipating(userId, promoId);       
+        if(alreadyParticipating){
+            return res.json({ participating: true });
+        }
+        
         let nowParticipating = await newParticipation(participation);
         if (nowParticipating) {
             await incrementParticipationGlobal(req.body.promoId);
