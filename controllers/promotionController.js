@@ -264,7 +264,8 @@ module.exports = {
                 //Mobile promotion
                 res.render('mobile-version', { title: promotion.promoTitle, promotion: promotion, participation: participation, user: user, winners: winners });
             } else {
-                console.log('show promotion on desktop');                //Desktop promotion
+                console.log('show promotion on desktop');               
+                //Desktop promotion
                 res.render('desktop-version', { title: promotion.promoTitle, promotion: promotion, participation: participation, user: user, winners: winners/*[{ name: 'Maria', points: 777, profileImg: 'http://semantic-ui.com/images/avatar2/small/molly.png' },{ name: 'Maria', points: 777 },{ name: 'Maria', points: 777, profileImg: 'http://semantic-ui.com/images/avatar2/small/molly.png' },{ name: 'Maria', points: 777}] */ });
             }
         }
@@ -555,7 +556,7 @@ module.exports = {
         if(alreadyParticipating){
             return res.json({ participating: true });
         }
-        
+
         let nowParticipating = await newParticipation(participation);
         if (nowParticipating) {
             await incrementParticipationGlobal(req.body.promoId);
