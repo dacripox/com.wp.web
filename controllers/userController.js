@@ -51,6 +51,7 @@ module.exports = {
             "onesignalId": onesignalId,
             "hasPushEnabled": true
         };
+
         try {
             let user = await request.get({ url: 'http://localhost:3000/user/id/' + userId })
             let userJSON = JSON.parse(user);
