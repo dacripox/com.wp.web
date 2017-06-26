@@ -316,7 +316,7 @@ function testAPI() {
       console.log('Successful login for: ' + response.name);
       //  document.getElementById('status').innerHTML = 'Thanks for logging in, ' + response.name + '! Your email is: ' + response.email;
       ga('send', 'event', 'WebApp', 'buttton', 'participate_facebook_inner_button');
-      doParticipate(undefined, response.email, response.first_name, response.last_name, response.id, undefined, response.picture.data.url,rasponse.age_range, response.gender);
+      doParticipate(undefined, response.email, response.first_name, response.last_name, response.id, undefined, response.picture.data.url,response.age_range, response.gender);
     }
   });
 }
