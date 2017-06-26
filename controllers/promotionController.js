@@ -512,8 +512,8 @@ module.exports = {
         user.userId = req.cookies.userId;
         user.firstName = req.body.firstName;
         user.lastName = req.body.lastName;
-        user.email = req.body.email.trim();
-        user.phone = req.body.phone.trim();
+        user.email = req.body.email;
+        user.phone = req.body.phone;
         user.onesignalId = "req.cookies.onesignalId"; //TODO
         user.googleId = req.body.googleId;
         user.facebookId = req.body.facebookId;
@@ -552,7 +552,7 @@ module.exports = {
         participation.ip = req.ip;
 
         //Check if user already participating
-        let alreadyParticipating = await isParticipating(userId, promoId);       
+        let alreadyParticipating = await isParticipating(participation.userId, participation.promoId);       
         if(alreadyParticipating){
             return res.json({ participating: true });
         }
@@ -561,8 +561,8 @@ module.exports = {
         if (nowParticipating) {
             await incrementParticipationGlobal(req.body.promoId);
             await incrementPoints(req.cookies.userId, req.body.promoId, 5);
-            if (req.body.refFriend && req.body.refFriend !== "") {
-
+            if (nowParticipating && req.body.refFriend && req.body.refFriend !== "") {
+                //Increment points to refFriend, if have
                 await incrementParticipation(req.body.refFriend, req.body.promoId);
                 await incrementPoints(req.body.refFriend, req.body.promoId, 10);
             }
